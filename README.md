@@ -1,47 +1,73 @@
-# Svelte + TS + Vite
+# What The Cost — Smart Needs & Wants Budgeting (PWA)
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+**What The Cost** is a fast, privacy-first budgeting Progressive Web App built to answer the fundamental question: *“What does my life actually cost me?”*
 
-## Recommended IDE Setup
+Instead of overwhelming spreadsheets, everything entered into What The Cost is classified as either an essential **Need** or a discretionary **Want**. The app normalizes daily, weekly, monthly, quarterly, and yearly expenses into any target time-horizon on the fly, compares your spending to the **50/30/20 budget benchmark**, and features an interactive **"What-If" Cut Simulator** so you can see how much annual cash you reclaim by trimming non-essentials.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+---
 
-## Need an official Svelte framework?
+## 🌟 Key Features
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+- **Needs vs. Wants Focus**: Clearly distinguish between fixed survival essentials and discretionary lifestyle spending.
+- **Unified Time-Horizon Switcher**: Instantly toggle all figures between **Day, Week, Month, and Year** (`Day` | `Wk` | `Mo` | `Yr`).
+- **Interactive "What-If" Cut Simulator**: Sandbox mode to simulate disabling wants—instantly calculating reclaimed cash and improved savings rates without modifying actual records.
+- **50 / 30 / 20 Budget Health Meter**: Benchmarks your spending against the classic rule of thumb (50% Needs, 30% Wants, 20% Savings).
+- **Time-Cost / Wage Math**: Enter your income to see what each purchase costs you in *hours and minutes of work* (e.g. *"$100 concert = 3h 52m of work"*).
+- **Fast Quick-Add Bottom Sheet**: Log recurring expenses or one-off transactions in seconds with preset categories and custom tags.
+- **100% Local-First & Private**: Powered by browser IndexedDB (Dexie.js). Zero accounts, zero tracking, zero remote servers.
+- **Offline PWA Support**: Installable on iOS, Android, macOS, and Windows with offline service worker caching.
+- **Complete Data Portability**: Export and import your data anytime via **JSON backups** and **CSV spreadsheets**.
 
-## Technical considerations
+---
 
-**Why use this over SvelteKit?**
+## 🛠️ Tech Stack
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+- **Framework**: [Svelte 5](https://svelte.dev/) (Runes reactivity)
+- **Tooling**: [Vite](https://vite.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Icons**: [Lucide Svelte](https://lucide.dev/)
+- **Database**: [Dexie.js](https://dexie.org/) (IndexedDB wrapper)
+- **PWA**: [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) (Workbox Service Worker)
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+---
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+## 🚀 Getting Started
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+### Prerequisites
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+- Node.js (v18+)
+- npm
 
-**Why include `.vscode/extensions.json`?**
+### Installation
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+```bash
+# Clone or navigate to directory
+cd what-the-cost
 
-**Why enable `allowJs` in the TS template?**
+# Install dependencies
+npm install
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+# Start local development server
+npm run dev
+```
 
-**Why is HMR not preserving my local component state?**
+The app will start at `http://localhost:5173/`.
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
+### Production Build
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+```bash
+npm run build
+npm run preview
+```
 
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+### Type Checking & Diagnostics
+
+```bash
+npm run check
+```
+
+### Verification Tests
+
+```bash
+node --experimental-strip-types tests/verify-calculations.mjs
 ```
