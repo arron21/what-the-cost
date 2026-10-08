@@ -4,6 +4,8 @@
 
 Instead of overwhelming spreadsheets, everything entered into What The Cost is classified as either an essential **Need** or a discretionary **Want**. The app normalizes daily, weekly, monthly, quarterly, and yearly expenses into any target time-horizon on the fly, compares your spending to the **50/30/20 budget benchmark**, and features an interactive **"What-If" Cut Simulator** so you can see how much annual cash you reclaim by trimming non-essentials.
 
+🌐 **Live Demo**: [https://arron21.github.io/what-the-cost/](https://arron21.github.io/what-the-cost/)
+
 ---
 
 ## 🌟 Key Features

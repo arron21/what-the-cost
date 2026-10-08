@@ -5,6 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/what-the-cost/',
   plugins: [
     svelte(),
     tailwindcss(),
@@ -21,9 +22,11 @@ export default defineConfig({
         background_color: '#0b0f19',
         display: 'standalone',
         orientation: 'portrait',
+        scope: '/what-the-cost/',
+        start_url: '/what-the-cost/',
         icons: [
           {
-            src: '/app-icon.svg',
+            src: 'app-icon.svg',
             sizes: '192x192 512x512',
             type: 'image/svg+xml',
             purpose: 'any maskable'
