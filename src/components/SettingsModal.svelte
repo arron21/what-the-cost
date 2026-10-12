@@ -1,16 +1,6 @@
 <script lang="ts">
   import type { IncomeFrequency, UserSettings } from '../types'
   import { exportToJSON, exportToCSV, importFromJSON, importFromCSV } from '../utils/exportImport'
-  import { 
-    X, 
-    Download, 
-    Upload, 
-    Sparkles, 
-    Trash2, 
-    Check, 
-    AlertCircle, 
-    HardDrive
-  } from '@lucide/svelte'
 
   interface Props {
     isOpen: boolean
@@ -73,7 +63,7 @@
     const file = input.files[0]
     const res = await importFromJSON(file)
     if (res.success) {
-      statusMessage = { type: 'success', text: `Successfully restored ${res.count} items from JSON backup!` }
+      statusMessage = { type: 'success', text: `Restored ${res.count} allocations from JSON backup.` }
       onDataChanged()
     } else {
       statusMessage = { type: 'error', text: res.error || 'Failed to import JSON' }
@@ -87,7 +77,7 @@
     const file = input.files[0]
     const res = await importFromCSV(file)
     if (res.success) {
-      statusMessage = { type: 'success', text: `Successfully imported ${res.count} items from CSV!` }
+      statusMessage = { type: 'success', text: `Imported ${res.count} allocations from CSV ledger.` }
       onDataChanged()
     } else {
       statusMessage = { type: 'error', text: res.error || 'Failed to import CSV' }
@@ -109,7 +99,7 @@
 {#if isOpen}
   <!-- Backdrop -->
   <div 
-    class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200"
+    class="raster-modal-backdrop"
     onclick={onClose}
     onkeydown={(e) => { if (e.key === 'Escape') onClose(); }}
     tabindex="0"
@@ -117,7 +107,7 @@
     aria-label="Close Settings backdrop"
   >
     <div
-      class="bg-slate-900 border border-slate-800 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom duration-300 relative text-slate-100"
+      class="raster-modal-dialog"
       onclick={(e) => e.stopPropagation()}
       onkeydown={(e) => e.stopPropagation()}
       role="dialog"
@@ -125,107 +115,92 @@
       tabindex="-1"
     >
       <!-- Header -->
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-          <span>Settings & Data Management</span>
-        </h3>
+      <div class="flex justify-between items-baseline pb-3 border-bottom mb-4">
+        <div>
+          <span class="raster-index">[ CONFIG ]</span>
+          <h3 class="raster-h3 inline ml-2">SYSTEM PARAMETERS & LEDGER</h3>
+        </div>
         <button
           type="button"
           onclick={onClose}
-          class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition"
+          class="raster-btn raster-btn-ghost raster-btn-sm"
           aria-label="Close Settings modal"
         >
-          <X class="w-4 h-4" />
+          ✕
         </button>
       </div>
 
       {#if statusMessage}
-        <div class="mt-3 p-3 rounded-xl text-xs flex items-center gap-2 {statusMessage.type === 'success' ? 'bg-emerald-950/60 border border-emerald-500/40 text-emerald-300' : 'bg-rose-950/60 border border-rose-500/40 text-rose-300'}">
-          {#if statusMessage.type === 'success'}
-            <Check class="w-4 h-4 shrink-0 text-emerald-400" />
-          {:else}
-            <AlertCircle class="w-4 h-4 shrink-0 text-rose-400" />
-          {/if}
-          <span>{statusMessage.text}</span>
+        <div class="raster-callout {statusMessage.type === 'success' ? '' : 'raster-callout-accent'} mb-4">
+          <span class="raster-label">{statusMessage.type === 'success' ? 'STATUS: SUCCESS' : 'STATUS: ERROR'}</span>
+          <span class="raster-small">{statusMessage.text}</span>
         </div>
       {/if}
 
-      <div class="space-y-5 pt-4">
-        <!-- 1. Income Settings -->
-        <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
+      <div class="space-y-5">
+        <!-- 1. Income Benchmark -->
+        <div class="raster-card raster-card-subtle p-4 space-y-3">
+          <div class="flex justify-between items-center">
             <div>
-              <h4 class="text-xs font-bold text-white uppercase tracking-wider">Income Benchmark</h4>
-              <p class="text-[11px] text-slate-400">Enables 50/30/20 rule and time-wage calculations</p>
+              <span class="raster-label">// INCOME BENCHMARK</span>
+              <div class="font-bold text-sm text-primary">Baseline Capital Inflow</div>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" bind:checked={incomeEnabled} class="sr-only peer" />
-              <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
+            <button
+              type="button"
+              onclick={() => (incomeEnabled = !incomeEnabled)}
+              class="raster-btn {incomeEnabled ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm"
+            >
+              <span>{incomeEnabled ? 'ENABLED' : 'DISABLED'}</span>
+            </button>
           </div>
 
           {#if incomeEnabled}
-            <div class="space-y-3 pt-2">
-              <div class="grid grid-cols-2 gap-2">
-                <div>
-                  <label for="income-amount" class="block text-[11px] font-semibold text-slate-400 mb-1">
-                    Take-Home Income
-                  </label>
-                  <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">{currency}</span>
-                    <input
-                      id="income-amount"
-                      type="number"
-                      bind:value={incomeAmount}
-                      placeholder="4500"
-                      class="w-full pl-7 pr-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label for="income-freq" class="block text-[11px] font-semibold text-slate-400 mb-1">
-                    Frequency
-                  </label>
-                  <select
-                    id="income-freq"
-                    bind:value={incomeFrequency}
-                    class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                    <option value="hourly">Hourly Wage</option>
-                  </select>
-                </div>
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <div class="raster-field">
+                <label for="income-amount" class="raster-field-label">TAKE-HOME AMOUNT ({currency})</label>
+                <input
+                  id="income-amount"
+                  type="number"
+                  bind:value={incomeAmount}
+                  placeholder="4500"
+                  class="raster-input font-bold"
+                />
               </div>
 
-              {#if incomeFrequency === 'hourly' || incomeAmount}
-                <div>
-                  <label for="hours-week" class="block text-[11px] font-semibold text-slate-400 mb-1">
-                    Work Hours / Week (to calculate hourly rate)
-                  </label>
-                  <input
-                    id="hours-week"
-                    type="number"
-                    bind:value={hoursPerWeek}
-                    placeholder="40"
-                    class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-              {/if}
+              <div class="raster-field">
+                <label for="income-freq" class="raster-field-label">INFLOW FREQUENCY</label>
+                <select
+                  id="income-freq"
+                  bind:value={incomeFrequency}
+                  class="raster-select"
+                >
+                  <option value="monthly">MONTHLY</option>
+                  <option value="yearly">YEARLY</option>
+                  <option value="hourly">HOURLY WAGE</option>
+                </select>
+              </div>
+
+              <div class="col-span-2 raster-field">
+                <label for="hours-week" class="raster-field-label">WORK HOURS / WEEK (HOURLY NORMALIZER)</label>
+                <input
+                  id="hours-week"
+                  type="number"
+                  bind:value={hoursPerWeek}
+                  placeholder="40"
+                  class="raster-input raster-mono text-xs"
+                />
+              </div>
             </div>
           {/if}
         </div>
 
-        <!-- 2. Currency Selector -->
-        <div>
-          <label for="settings-curr" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-            Currency Symbol
-          </label>
+        <!-- 2. Currency Specification -->
+        <div class="raster-field">
+          <label for="settings-curr" class="raster-field-label">CURRENCY SYMBOL</label>
           <select
             id="settings-curr"
             bind:value={currency}
-            class="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500"
+            class="raster-select"
           >
             {#each currencies as c}
               <option value={c.symbol}>{c.name}</option>
@@ -233,38 +208,32 @@
           </select>
         </div>
 
-        <!-- 3. Local-First & Privacy Badge -->
-        <div class="bg-blue-950/30 border border-blue-500/20 rounded-2xl p-3 flex items-start gap-2.5">
-          <HardDrive class="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-          <div class="text-[11px] text-slate-300">
-            <span class="font-bold text-white">100% Local-First & Private:</span> All your data stays strictly in your browser's IndexedDB. No external servers or cloud logins required.
-          </div>
+        <!-- 3. Local-First Notice -->
+        <div class="raster-callout">
+          <span class="raster-label">// STORAGE PROTOCOL</span>
+          <span class="raster-small text-secondary">
+            <strong>100% Local-First:</strong> All records are written exclusively to browser IndexedDB. Zero cloud telemetry.
+          </span>
         </div>
 
-        <!-- 4. Export & Import Actions -->
+        <!-- 4. Data Backup & Restore -->
         <div>
-          <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-            Data Backup & Restore
-          </span>
+          <span class="raster-field-label mb-2 block">DATA MIGRATION // BACKUP & RESTORE</span>
           <div class="grid grid-cols-2 gap-2">
-            <!-- JSON Export -->
             <button
               type="button"
               onclick={() => exportToJSON(settings)}
-              class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition"
+              class="raster-btn raster-btn-outline raster-btn-sm"
             >
-              <Download class="w-3.5 h-3.5 text-blue-400" />
-              <span>Backup JSON</span>
+              <span>BACKUP JSON</span>
             </button>
 
-            <!-- JSON Import -->
             <button
               type="button"
               onclick={() => jsonFileInput?.click()}
-              class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition"
+              class="raster-btn raster-btn-outline raster-btn-sm"
             >
-              <Upload class="w-3.5 h-3.5 text-indigo-400" />
-              <span>Restore JSON</span>
+              <span>RESTORE JSON</span>
             </button>
             <input
               type="file"
@@ -274,24 +243,20 @@
               class="hidden"
             />
 
-            <!-- CSV Export -->
             <button
               type="button"
               onclick={exportToCSV}
-              class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition"
+              class="raster-btn raster-btn-outline raster-btn-sm"
             >
-              <Download class="w-3.5 h-3.5 text-emerald-400" />
-              <span>Export CSV</span>
+              <span>EXPORT CSV</span>
             </button>
 
-            <!-- CSV Import -->
             <button
               type="button"
               onclick={() => csvFileInput?.click()}
-              class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition"
+              class="raster-btn raster-btn-outline raster-btn-sm"
             >
-              <Upload class="w-3.5 h-3.5 text-amber-400" />
-              <span>Import CSV</span>
+              <span>IMPORT CSV</span>
             </button>
             <input
               type="file"
@@ -303,48 +268,44 @@
           </div>
         </div>
 
-        <!-- 5. Sample Data & Danger Zone -->
-        <div class="pt-2 border-t border-slate-800 space-y-2">
-          <div class="flex items-center justify-between">
-            <button
-              type="button"
-              onclick={() => {
-                if (confirm('Load realistic sample budgeting data? This will populate sample needs and wants.')) {
-                  onSeedData()
-                  statusMessage = { type: 'success', text: 'Sample budgeting data loaded successfully!' }
-                }
-              }}
-              class="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1.5 py-1"
-            >
-              <Sparkles class="w-3.5 h-3.5" />
-              <span>Load Realistic Demo Data</span>
-            </button>
+        <!-- 5. Sample Data & Reset -->
+        <div class="pt-3 border-top flex justify-between items-center">
+          <button
+            type="button"
+            onclick={() => {
+              if (confirm('Load standard reference allocation data?')) {
+                onSeedData()
+                statusMessage = { type: 'success', text: 'Reference allocations loaded.' }
+              }
+            }}
+            class="raster-btn raster-btn-ghost raster-btn-sm"
+          >
+            <span>LOAD REFERENCE DATA</span>
+          </button>
 
-            <button
-              type="button"
-              onclick={() => {
-                if (confirm('Are you sure you want to clear all items? Make sure to export a backup if needed.')) {
-                  onClearData()
-                  statusMessage = { type: 'success', text: 'All items cleared.' }
-                }
-              }}
-              class="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 py-1"
-            >
-              <Trash2 class="w-3.5 h-3.5" />
-              <span>Clear All Items</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onclick={() => {
+              if (confirm('Permanently clear all ledger allocations? Ensure you have exported a backup.')) {
+                onClearData()
+                statusMessage = { type: 'success', text: 'Ledger cleared.' }
+              }
+            }}
+            class="raster-btn raster-btn-ghost raster-btn-sm"
+            style="color: var(--raster-accent);"
+          >
+            <span>PURGE LEDGER</span>
+          </button>
         </div>
 
-        <!-- Footer action -->
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 pt-4 border-top">
           <button
             type="button"
             onclick={handleSave}
-            class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 transition flex items-center gap-1.5"
+            class="raster-btn raster-btn-primary raster-btn-sm"
           >
-            <Check class="w-4 h-4" />
-            <span>Save & Apply</span>
+            <span>CONFIRM & APPLY</span>
           </button>
         </div>
       </div>

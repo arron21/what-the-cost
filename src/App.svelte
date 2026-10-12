@@ -22,7 +22,6 @@
   import ItemModal from './components/ItemModal.svelte'
   import SettingsModal from './components/SettingsModal.svelte'
   import PWAPrompt from './components/PWAPrompt.svelte'
-  import { Plus, Sparkles } from '@lucide/svelte'
 
   let settings = $state<UserSettings>(DEFAULT_SETTINGS)
   let items = $state<Item[]>([])
@@ -47,7 +46,6 @@
 
   onMount(async () => {
     await refreshData()
-    // If DB is fresh/empty on first visit, seed sample data for immediate exploration
     if (items.length === 0) {
       await seedSampleData()
       await refreshData()
@@ -64,6 +62,7 @@
   }
 
   function applyTheme(theme: 'dark' | 'light') {
+    document.documentElement.setAttribute('data-theme', theme)
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
@@ -145,7 +144,7 @@
   }
 </script>
 
-<div class="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans transition-colors duration-200">
+<div class="min-h-screen flex flex-col font-sans transition-colors duration-150" style="background-color: var(--raster-canvas); color: var(--raster-fg-primary);">
   <PWAPrompt />
 
   <Header
@@ -159,13 +158,15 @@
     onToggleWhatIf={handleToggleWhatIf}
   />
 
-  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+  <main class="flex-1 raster-container py-8 space-y-8">
     {#if !isLoaded}
-      <div class="flex items-center justify-center py-24">
-        <div class="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin"></div>
+      <div class="flex items-center justify-center py-28">
+        <span class="raster-mono text-sm tracking-widest text-muted uppercase animate-pulse">
+          INITIALIZING SWISS LEDGER...
+        </span>
       </div>
     {:else}
-      <!-- Top Summary Cards & 50/30/20 Metric -->
+      <!-- Metric Summary Cards & 50/30/20 Metric -->
       <SummaryCards
         {stats}
         horizon={settings.timeHorizon}
@@ -174,7 +175,7 @@
         {hasIncome}
       />
 
-      <!-- What-If Simulator Banner (when active) -->
+      <!-- What-If Simulator Banner (When active) -->
       <WhatIfSimulator
         whatIfActive={settings.whatIfActive}
         {stats}
@@ -185,7 +186,7 @@
         onCutAllWants={handleCutAllWants}
       />
 
-      <!-- Visual Analytics: Donut & Category Distribution -->
+      <!-- Category Allocation Ledger & Capital Retention -->
       <AnalyticsView
         {items}
         {stats}
@@ -196,7 +197,7 @@
         onSelectCategoryFilter={(catId) => (activeCategoryFilter = catId)}
       />
 
-      <!-- Main Items List & Filter Engine -->
+      <!-- Financial Ledger -->
       <ItemList
         {items}
         horizon={settings.timeHorizon}
@@ -212,26 +213,27 @@
     {/if}
   </main>
 
-  <!-- Mobile Floating Action Button (FAB) for Quick Add -->
+  <!-- Mobile Floating Action Button (Swiss Sharp Button) -->
   <button
     type="button"
     onclick={handleOpenAddModal}
-    class="sm:hidden fixed bottom-6 right-5 z-40 w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-xl shadow-blue-600/40 active:scale-90 transition-transform"
-    aria-label="Add Item"
+    class="sm:hidden fixed bottom-6 right-5 z-40 raster-btn raster-btn-primary"
+    style="padding: 12px 18px; box-shadow: var(--raster-shadow-hard); font-weight: 700;"
+    aria-label="Add Allocation"
   >
-    <Plus class="w-7 h-7" />
+    + ALLOCATION
   </button>
 
-  <!-- Footer Info -->
-  <footer class="border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+  <!-- Swiss Architectural Footer -->
+  <footer class="border-top py-6 mt-12 raster-label" style="background-color: var(--raster-surface);">
+    <div class="raster-container flex flex-col sm:flex-row justify-between items-center gap-2">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-400">What The Cost</span>
-        <span>•</span>
-        <span>Needs vs. Wants Budgeting</span>
+        <span class="font-bold text-primary">WHAT THE COST</span>
+        <span>//</span>
+        <span>SWISS INTERNATIONAL TYPOGRAPHIC STYLE</span>
       </div>
-      <div class="text-[11px] text-slate-400">
-        100% Local-First PWA • IndexedDB Storage • Zero Cloud Logins
+      <div class="raster-mono text-muted text-[11px]">
+        100% LOCAL-FIRST PWA · INDEXEDDB STORAGE · ZERO CLOUD TELEMETRY
       </div>
     </div>
   </footer>

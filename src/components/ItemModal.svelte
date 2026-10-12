@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Frequency, Item, ItemType } from '../types'
   import { FREQUENCY_LABELS, PRESET_CATEGORIES } from '../types'
-  import { X, ShieldCheck, Sparkles, Check } from '@lucide/svelte'
+  import { X } from '@lucide/svelte'
 
   interface Props {
     isOpen: boolean
@@ -23,7 +23,6 @@
   let notes = $state('')
   let date = $state('')
 
-  // Watch editingItem changes
   $effect(() => {
     if (editingItem) {
       name = editingItem.name
@@ -94,16 +93,16 @@
 {#if isOpen}
   <!-- Backdrop -->
   <div 
-    class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200"
+    class="raster-modal-backdrop"
     onclick={onClose}
     onkeydown={(e) => { if (e.key === 'Escape') onClose(); }}
     tabindex="0"
     role="button"
     aria-label="Close modal backdrop"
   >
-    <!-- Modal Card / Mobile Bottom Sheet -->
+    <!-- Modal Card -->
     <div
-      class="bg-slate-900 border border-slate-800 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom duration-300 relative text-slate-100"
+      class="raster-modal-dialog"
       onclick={(e) => e.stopPropagation()}
       onkeydown={(e) => e.stopPropagation()}
       role="dialog"
@@ -111,75 +110,66 @@
       tabindex="-1"
     >
       <!-- Header -->
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-          {#if editingItem}
-            <span>Edit Item</span>
-          {:else}
-            <span>Add New Item / Expense</span>
-          {/if}
-        </h3>
+      <div class="flex justify-between items-baseline pb-3 border-bottom mb-4">
+        <div>
+          <span class="raster-index">[ RECORD ]</span>
+          <h3 class="raster-h3 inline ml-2">
+            {editingItem ? 'EDIT ALLOCATION' : 'NEW ALLOCATION ENTRY'}
+          </h3>
+        </div>
         <button
           type="button"
           onclick={onClose}
-          class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition"
+          class="raster-btn raster-btn-ghost raster-btn-sm"
           aria-label="Close modal"
         >
-          <X class="w-4 h-4" />
+          ✕
         </button>
       </div>
 
-      <form onsubmit={handleSubmit} class="space-y-4 pt-4">
-        <!-- 1. Need vs Want Toggle (The Core Differentiator) -->
-        <div>
-          <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-            Classification
-          </span>
+      <form onsubmit={handleSubmit} class="space-y-4">
+        <!-- 1. Need vs Want Classification -->
+        <div class="raster-field">
+          <span class="raster-field-label">CLASSIFICATION // NATURE OF COMMITMENT</span>
           <div class="grid grid-cols-2 gap-2">
             <button
               type="button"
               onclick={() => (type = 'need')}
-              class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border font-bold text-xs transition-all {type === 'need' ? 'bg-blue-600/30 border-blue-500 text-blue-300 ring-2 ring-blue-500/30' : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'}"
+              class="raster-btn py-3 {type === 'need' ? 'raster-btn-primary' : 'raster-btn-outline'}"
             >
-              <ShieldCheck class="w-4 h-4 text-blue-400" />
-              <span>NEED (Essential)</span>
+              <span>NEED [ESSENTIAL]</span>
             </button>
             <button
               type="button"
               onclick={() => (type = 'want')}
-              class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border font-bold text-xs transition-all {type === 'want' ? 'bg-pink-600/30 border-pink-500 text-pink-300 ring-2 ring-pink-500/30' : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'}"
+              class="raster-btn py-3 {type === 'want' ? 'raster-btn-accent' : 'raster-btn-outline'}"
             >
-              <Sparkles class="w-4 h-4 text-pink-400" />
-              <span>WANT (Discretionary)</span>
+              <span>WANT [DISCRETIONARY]</span>
             </button>
           </div>
-          <p class="text-[11px] text-slate-500 mt-1">
-            {type === 'need' ? 'Essential commitments like rent, groceries, medicine, commute.' : 'Non-essentials like dining out, subscriptions, fun gear, coffee.'}
-          </p>
+          <span class="raster-mono text-muted text-xs">
+            {type === 'need' ? '// Fixed survival costs: housing, basic sustenance, medical, utility.' : '// Non-essentials: dining out, entertainment, subscriptions, leisure.'}
+          </span>
         </div>
 
         <!-- 2. Item Name -->
-        <div>
-          <label for="item-name" class="block text-xs font-semibold text-slate-400 mb-1">
-            Item / Service Name *
-          </label>
+        <div class="raster-field">
+          <label for="item-name" class="raster-field-label">ITEM / COMMITMENT IDENTIFIER *</label>
           <input
             id="item-name"
             type="text"
             bind:value={name}
             required
-            placeholder="e.g. Morning Latte, Rent, Netflix, Gym"
-            class="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            placeholder="e.g. APARTMENT LEASE, MORNING ESPRESSO, CLOUD GAMING"
+            class="raster-input font-bold"
           />
         </div>
 
         <!-- 3. Cost & Currency -->
-        <div>
-          <label for="item-amount" class="block text-xs font-semibold text-slate-400 mb-1">
-            Cost Amount *
-          </label>
+        <div class="raster-field">
+          <label for="item-amount" class="raster-field-label">MONETARY ALLOCATION ({currency}) *</label>
           <div class="relative">
-            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-base font-bold text-slate-400">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 raster-mono font-bold text-muted">
               {currency}
             </span>
             <input
@@ -190,123 +180,112 @@
               bind:value={amount}
               required
               placeholder="0.00"
-              class="w-full pl-8 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-lg font-bold text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              class="raster-input pl-8 raster-stat-value text-xl font-bold"
             />
           </div>
         </div>
 
-        <!-- 4. Frequency Selector Pills -->
-        <div>
-          <span class="block text-xs font-semibold text-slate-400 mb-1.5">
-            How often does this cost occur? *
-          </span>
+        <!-- 4. Recurrence Frequency -->
+        <div class="raster-field">
+          <span class="raster-field-label">RECURRENCE FREQUENCY // OCCURRENCE CADENCE *</span>
           <div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
             {#each frequencies as freq}
               <button
                 type="button"
                 onclick={() => (frequency = freq)}
-                class="py-2 px-2 text-xs font-semibold rounded-lg border text-center transition {frequency === freq ? 'bg-slate-800 border-blue-500 text-blue-400 font-bold' : 'bg-slate-950/70 border-slate-800 text-slate-400 hover:text-slate-200'}"
+                class="raster-btn {frequency === freq ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm"
               >
-                {FREQUENCY_LABELS[freq]}
+                {FREQUENCY_LABELS[freq].toUpperCase()}
               </button>
             {/each}
           </div>
         </div>
 
-        <!-- If One-Time: Date picker -->
+        <!-- Date (if One-Time) -->
         {#if frequency === 'once'}
-          <div>
-            <label for="item-date" class="block text-xs font-semibold text-slate-400 mb-1">
-              Purchase Date
-            </label>
+          <div class="raster-field">
+            <label for="item-date" class="raster-field-label">SETTLEMENT DATE</label>
             <input
               id="item-date"
               type="date"
               bind:value={date}
-              class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500"
+              class="raster-input raster-mono text-xs"
             />
           </div>
         {/if}
 
         <!-- 5. Category Selection -->
-        <div>
-          <label for="item-cat" class="block text-xs font-semibold text-slate-400 mb-1">
-            Category
-          </label>
+        <div class="raster-field">
+          <label for="item-cat" class="raster-field-label">LEDGER CATEGORY</label>
           <select
             id="item-cat"
             bind:value={category}
-            class="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+            class="raster-select"
           >
             {#each PRESET_CATEGORIES as cat}
-              <option value={cat.id}>{cat.name}</option>
+              <option value={cat.id}>{cat.name.toUpperCase()}</option>
             {/each}
           </select>
         </div>
 
         <!-- 6. Tags -->
-        <div>
-          <label for="tag-input-field" class="block text-xs font-semibold text-slate-400 mb-1">
-            Tags (optional)
-          </label>
-          <div class="flex items-center gap-2 mb-2">
+        <div class="raster-field">
+          <label for="tag-input-field" class="raster-field-label">INDEX TAGS (OPTIONAL)</label>
+          <div class="flex gap-2">
             <input
               id="tag-input-field"
               type="text"
               bind:value={tagInput}
               onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
-              placeholder="Add tag (e.g. coffee, fixed) and press Enter"
-              class="flex-1 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              placeholder="ENTER TAG AND PRESS ENTER"
+              class="raster-input text-xs raster-mono flex-1"
             />
             <button
               type="button"
               onclick={addTag}
-              class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 rounded-xl border border-slate-700"
+              class="raster-btn raster-btn-outline raster-btn-sm"
             >
-              Add
+              + ADD
             </button>
           </div>
           {#if tags.length > 0}
-            <div class="flex flex-wrap gap-1.5">
+            <div class="flex flex-wrap gap-1 mt-1">
               {#each tags as t}
-                <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                <span class="raster-tag">
                   #{t}
-                  <button type="button" onclick={() => removeTag(t)} class="hover:text-rose-400 ml-0.5">✕</button>
+                  <button type="button" onclick={() => removeTag(t)} class="ml-1 text-muted hover:text-accent">✕</button>
                 </span>
               {/each}
             </div>
           {/if}
         </div>
 
-        <!-- 7. Notes (Optional) -->
-        <div>
-          <label for="item-notes" class="block text-xs font-semibold text-slate-400 mb-1">
-            Notes / Due Date info (optional)
-          </label>
+        <!-- 7. Notes -->
+        <div class="raster-field">
+          <label for="item-notes" class="raster-field-label">MEMO / DUE DATE SPECIFICATION (OPTIONAL)</label>
           <input
             id="item-notes"
             type="text"
             bind:value={notes}
-            placeholder="e.g. Billed on the 15th, includes family plan"
-            class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            placeholder="e.g. Due 1st of month, family tier"
+            class="raster-input text-xs"
           />
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-800">
+        <!-- Footer Actions -->
+        <div class="flex justify-end gap-3 pt-4 border-top">
           <button
             type="button"
             onclick={onClose}
-            class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-xl transition"
+            class="raster-btn raster-btn-ghost raster-btn-sm"
           >
-            Cancel
+            CANCEL
           </button>
           <button
             type="submit"
-            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 active:scale-95 transition flex items-center gap-1.5"
+            class="raster-btn raster-btn-primary raster-btn-sm"
           >
-            <Check class="w-4 h-4" />
-            <span>{editingItem ? 'Save Changes' : 'Add Item'}</span>
+            {editingItem ? 'SAVE ALLOCATION' : '+ CONFIRM ALLOCATION'}
           </button>
         </div>
       </form>

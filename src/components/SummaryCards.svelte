@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { BudgetStats, TimeHorizon } from '../types'
   import { formatCurrency } from '../utils/costNormalizer'
-  import { ShieldCheck, Sparkles, PiggyBank, ArrowDownRight, TrendingUp } from '@lucide/svelte'
 
   interface Props {
     stats: BudgetStats
@@ -14,158 +13,145 @@
   let { stats, horizon, currency, whatIfActive, hasIncome }: Props = $props()
 
   const horizonLabels: Record<TimeHorizon, string> = {
-    daily: 'Daily',
-    weekly: 'Weekly',
-    monthly: 'Monthly',
-    yearly: 'Annual',
+    daily: 'DAILY COST',
+    weekly: 'WEEKLY COST',
+    monthly: 'MONTHLY COST',
+    yearly: 'ANNUAL COST',
   }
 </script>
 
-<div class="space-y-4">
-  <!-- Top 4 Summary Cards Grid -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <!-- Total Cost Card -->
-    <div class="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group hover:border-slate-700 transition">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">{horizonLabels[horizon]} Cost</span>
-        <div class="p-1.5 rounded-lg bg-slate-800 text-slate-300">
-          <ArrowDownRight class="w-4 h-4" />
+<div class="space-y-6">
+  <!-- Metric KPI Cards (4-Column Swiss Grid) -->
+  <div class="raster-grid">
+    <!-- 01. Total Cost -->
+    <div class="col-3 col-lg-6">
+      <div class="raster-card raster-card-accent-top">
+        <div class="raster-stat">
+          <div class="raster-stat-label">
+            <span>{horizonLabels[horizon]}</span>
+            <span class="raster-mono">[ 01 ]</span>
+          </div>
+          <div class="raster-stat-value">
+            {formatCurrency(whatIfActive ? stats.activeTotalOutflow : stats.totalOutflow, currency)}
+          </div>
+          <div class="raster-stat-sub">
+            {#if whatIfActive && stats.simulatedSavings > 0}
+              <span class="raster-delta raster-delta-positive">-{formatCurrency(stats.simulatedSavings, currency)}</span>
+              <span class="raster-mono">WAS {formatCurrency(stats.totalOutflow, currency)}</span>
+            {:else if hasIncome}
+              <span>of {formatCurrency(stats.income, currency)} baseline</span>
+            {:else}
+              <span class="raster-mono">UNBENCHMARKED</span>
+            {/if}
+          </div>
         </div>
       </div>
-      <div>
-        <div class="text-xl sm:text-2xl font-black tracking-tight text-white">
-          {formatCurrency(whatIfActive ? stats.activeTotalOutflow : stats.totalOutflow, currency)}
-        </div>
-        {#if whatIfActive && stats.simulatedSavings > 0}
-          <div class="text-[11px] text-pink-400 font-medium flex items-center gap-1 mt-0.5">
-            <span>Was {formatCurrency(stats.totalOutflow, currency)}</span>
-          </div>
-        {:else if hasIncome}
-          <div class="text-[11px] text-slate-400 font-medium mt-0.5">
-            of {formatCurrency(stats.income, currency)} income
-          </div>
-        {/if}
-      </div>
-      <div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-slate-700 to-slate-600"></div>
     </div>
 
-    <!-- Needs Card (Blue) -->
-    <div class="bg-slate-900/80 backdrop-blur border border-blue-900/40 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group hover:border-blue-700/60 transition">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-1.5">
-          <span class="text-xs font-semibold uppercase tracking-wider text-blue-400">Needs</span>
-          <span class="text-[10px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-medium">Req</span>
-        </div>
-        <div class="p-1.5 rounded-lg bg-blue-500/20 text-blue-400">
-          <ShieldCheck class="w-4 h-4" />
+    <!-- 02. Needs -->
+    <div class="col-3 col-lg-6">
+      <div class="raster-card">
+        <div class="raster-stat">
+          <div class="raster-stat-label">
+            <span class="flex items-center gap-1.5">
+              NEEDS <span class="raster-tag raster-tag-solid" style="font-size: 9px; padding: 1px 4px;">REQ</span>
+            </span>
+            <span class="raster-mono">[ 02 ]</span>
+          </div>
+          <div class="raster-stat-value">
+            {formatCurrency(stats.needsTotal, currency)}
+          </div>
+          <div class="raster-stat-sub">
+            <span class="raster-delta {hasIncome && stats.needsPercentOfIncome > 50 ? 'raster-delta-negative' : 'raster-delta-positive'}">
+              {hasIncome ? `${stats.needsPercentOfIncome}% OF INC` : `${stats.needsPercentOfTotal}% OF TOT`}
+            </span>
+            <span class="raster-mono">GOAL: ~50%</span>
+          </div>
         </div>
       </div>
-      <div>
-        <div class="text-xl sm:text-2xl font-black tracking-tight text-blue-200">
-          {formatCurrency(stats.needsTotal, currency)}
-        </div>
-        <div class="text-[11px] font-medium flex items-center justify-between text-slate-400 mt-0.5">
-          <span>{hasIncome ? `${stats.needsPercentOfIncome}% of income` : `${stats.needsPercentOfTotal}% of total`}</span>
-          <span class="text-slate-500">Goal: ~50%</span>
-        </div>
-      </div>
-      <div class="absolute inset-x-0 bottom-0 h-1 bg-blue-500"></div>
     </div>
 
-    <!-- Wants Card (Pink) -->
-    <div class="bg-slate-900/80 backdrop-blur border border-pink-900/40 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group hover:border-pink-700/60 transition">
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center gap-1.5">
-          <span class="text-xs font-semibold uppercase tracking-wider text-pink-400">Wants</span>
-          <span class="text-[10px] px-1.5 py-0.2 rounded bg-pink-500/20 text-pink-300 font-medium">Opt</span>
-        </div>
-        <div class="p-1.5 rounded-lg bg-pink-500/20 text-pink-400">
-          <Sparkles class="w-4 h-4" />
+    <!-- 03. Wants -->
+    <div class="col-3 col-lg-6">
+      <div class="raster-card">
+        <div class="raster-stat">
+          <div class="raster-stat-label">
+            <span class="flex items-center gap-1.5">
+              WANTS <span class="raster-tag" style="font-size: 9px; padding: 1px 4px;">OPT</span>
+            </span>
+            <span class="raster-mono">[ 03 ]</span>
+          </div>
+          <div class="raster-stat-value" style={whatIfActive && stats.cutWantsCount > 0 ? 'color: var(--raster-accent);' : ''}>
+            {formatCurrency(whatIfActive ? stats.activeWantsTotal : stats.wantsTotal, currency)}
+          </div>
+          <div class="raster-stat-sub">
+            <span class="raster-delta {hasIncome && stats.wantsPercentOfIncome > 30 ? 'raster-delta-negative' : 'raster-delta-positive'}">
+              {hasIncome ? `${stats.wantsPercentOfIncome}% OF INC` : `${stats.wantsPercentOfTotal}% OF TOT`}
+            </span>
+            <span class="raster-mono">GOAL: ~30%</span>
+          </div>
         </div>
       </div>
-      <div>
-        <div class="text-xl sm:text-2xl font-black tracking-tight text-pink-200">
-          {formatCurrency(whatIfActive ? stats.activeWantsTotal : stats.wantsTotal, currency)}
-        </div>
-        <div class="text-[11px] font-medium flex items-center justify-between text-slate-400 mt-0.5">
-          <span>{hasIncome ? `${stats.wantsPercentOfIncome}% of income` : `${stats.wantsPercentOfTotal}% of total`}</span>
-          <span class="text-slate-500">Goal: ~30%</span>
-        </div>
-      </div>
-      <div class="absolute inset-x-0 bottom-0 h-1 bg-pink-500"></div>
     </div>
 
-    <!-- Savings / Cash Flow Card (Emerald) -->
-    <div class="bg-slate-900/80 backdrop-blur border border-emerald-900/40 rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden group hover:border-emerald-700/60 transition">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Savings / Surplus</span>
-        <div class="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
-          <PiggyBank class="w-4 h-4" />
+    <!-- 04. Savings / Surplus -->
+    <div class="col-3 col-lg-6">
+      <div class="raster-card">
+        <div class="raster-stat">
+          <div class="raster-stat-label">
+            <span>SAVINGS / SURPLUS</span>
+            <span class="raster-mono">[ 04 ]</span>
+          </div>
+          <div class="raster-stat-value" style={hasIncome && stats.activeNetSurplus < 0 ? 'color: var(--raster-accent);' : ''}>
+            {hasIncome ? formatCurrency(stats.activeNetSurplus, currency) : '—'}
+          </div>
+          <div class="raster-stat-sub">
+            {#if hasIncome}
+              <span class="raster-delta {stats.activeNetSurplus >= 0 ? 'raster-delta-positive' : 'raster-delta-negative'}">
+                {stats.savingsPercentOfIncome}% SAVED
+              </span>
+              <span class="raster-mono">GOAL: ~20%</span>
+            {:else}
+              <span class="raster-mono">ADD INCOME IN CONFIG</span>
+            {/if}
+          </div>
         </div>
       </div>
-      <div>
-        {#if hasIncome}
-          <div class="text-xl sm:text-2xl font-black tracking-tight {stats.activeNetSurplus >= 0 ? 'text-emerald-300' : 'text-rose-400'}">
-            {formatCurrency(stats.activeNetSurplus, currency)}
-          </div>
-          <div class="text-[11px] font-medium flex items-center justify-between text-slate-400 mt-0.5">
-            <span>{stats.savingsPercentOfIncome}% saved</span>
-            <span class="text-slate-500">Goal: ~20%</span>
-          </div>
-        {:else}
-          <div class="text-sm font-semibold text-slate-400">
-            No Income Set
-          </div>
-          <div class="text-[11px] text-slate-500 mt-0.5">
-            Add income in Settings to see savings rate
-          </div>
-        {/if}
-      </div>
-      <div class="absolute inset-x-0 bottom-0 h-1 {hasIncome && stats.activeNetSurplus < 0 ? 'bg-rose-500' : 'bg-emerald-500'}"></div>
     </div>
   </div>
 
-  <!-- 50/30/20 Benchmark Visualizer Bar -->
+  <!-- 50/30/20 Budget Health Metric Card -->
   {#if hasIncome}
-    <div class="bg-slate-900/70 border border-slate-800/80 rounded-xl p-3.5 space-y-2">
-      <div class="flex items-center justify-between text-xs">
-        <div class="flex items-center gap-2">
-          <TrendingUp class="w-3.5 h-3.5 text-blue-400" />
-          <span class="font-bold text-slate-300">50 / 30 / 20 Budget Health Metric</span>
-        </div>
-        <div class="flex items-center gap-3 text-[11px] font-medium">
-          <span class="flex items-center gap-1 text-blue-400"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Needs: {stats.needsPercentOfIncome}%</span>
-          <span class="flex items-center gap-1 text-pink-400"><span class="w-2 h-2 rounded-full bg-pink-500"></span> Wants: {stats.wantsPercentOfIncome}%</span>
-          <span class="flex items-center gap-1 text-emerald-400"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Savings: {stats.savingsPercentOfIncome}%</span>
+    <div class="raster-card">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-baseline gap-2 mb-2">
+        <div class="raster-label">50 / 30 / 20 BUDGET HEALTH ALLOCATION</div>
+        <div class="raster-label raster-mono flex flex-wrap gap-x-4">
+          <span style="color: var(--raster-fg-primary);">■ NEEDS: {stats.needsPercentOfIncome}%</span>
+          <span style="color: var(--raster-accent);">■ WANTS: {stats.wantsPercentOfIncome}%</span>
+          <span style="color: var(--raster-signal-emerald);">■ SAVINGS: {stats.savingsPercentOfIncome}%</span>
         </div>
       </div>
 
-      <!-- Segmented Bar -->
-      <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden flex gap-0.5 p-0.5 border border-slate-800">
-        <!-- Needs Segment -->
+      <!-- Segmented Multi-Bar -->
+      <div class="raster-segmented-bar" style="height: 12px;">
         <div 
-          class="h-full bg-blue-500 rounded-l-full transition-all duration-500" 
-          style="width: {Math.min(100, stats.needsPercentOfIncome)}%"
+          style="width: {Math.min(100, stats.needsPercentOfIncome)}%; background-color: var(--raster-fg-primary);" 
           title={`Needs: ${stats.needsPercentOfIncome}% of income (ideal: ~50%)`}
         ></div>
-        <!-- Wants Segment -->
         <div 
-          class="h-full bg-pink-500 transition-all duration-500" 
-          style="width: {Math.min(100, stats.wantsPercentOfIncome)}%"
+          style="width: {Math.min(100, stats.wantsPercentOfIncome)}%; background-color: var(--raster-accent);" 
           title={`Wants: ${stats.wantsPercentOfIncome}% of income (ideal: ~30%)`}
         ></div>
-        <!-- Savings Segment -->
         <div 
-          class="h-full bg-emerald-500 rounded-r-full transition-all duration-500" 
-          style="width: {Math.min(100, Math.max(0, 100 - stats.needsPercentOfIncome - stats.wantsPercentOfIncome))}%"
+          style="width: {Math.min(100, Math.max(0, 100 - stats.needsPercentOfIncome - stats.wantsPercentOfIncome))}%; background-color: var(--raster-signal-emerald);" 
           title={`Savings: ${stats.savingsPercentOfIncome}% of income (ideal: ~20%)`}
         ></div>
       </div>
 
-      <div class="flex justify-between text-[10px] text-slate-500 px-0.5">
-        <span>Target: 50% Needs</span>
-        <span>Target: 30% Wants</span>
-        <span>Target: 20% Savings</span>
+      <div class="flex justify-between mt-2 raster-label" style="font-size: 10px;">
+        <span>TARGET: 50% NEEDS</span>
+        <span>TARGET: 30% WANTS</span>
+        <span>TARGET: 20% SAVINGS</span>
       </div>
     </div>
   {/if}
