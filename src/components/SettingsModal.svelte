@@ -158,13 +158,19 @@
             <div class="grid grid-cols-2 gap-3 pt-2">
               <div class="raster-field">
                 <label for="income-amount" class="raster-field-label">TAKE-HOME AMOUNT ({currency})</label>
-                <input
-                  id="income-amount"
-                  type="number"
-                  bind:value={incomeAmount}
-                  placeholder="4500"
-                  class="raster-input font-bold"
-                />
+                <div class="relative flex items-center">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 raster-mono font-bold text-muted pointer-events-none select-none text-sm">
+                    {currency}
+                  </span>
+                  <input
+                    id="income-amount"
+                    type="number"
+                    bind:value={incomeAmount}
+                    placeholder="4500"
+                    class="raster-input raster-input-with-prefix font-bold"
+                    style="padding-left: 2.25rem !important; padding-top: 10px; padding-bottom: 10px; padding-right: 14px;"
+                  />
+                </div>
               </div>
 
               <div class="raster-field">
@@ -173,6 +179,7 @@
                   id="income-freq"
                   bind:value={incomeFrequency}
                   class="raster-select"
+                  style="padding: 10px 14px;"
                 >
                   <option value="monthly">MONTHLY</option>
                   <option value="yearly">YEARLY</option>
@@ -188,6 +195,7 @@
                   bind:value={hoursPerWeek}
                   placeholder="40"
                   class="raster-input raster-mono text-xs"
+                  style="padding: 10px 14px;"
                 />
               </div>
             </div>

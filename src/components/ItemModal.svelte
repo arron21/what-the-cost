@@ -162,14 +162,15 @@
             required
             placeholder="e.g. APARTMENT LEASE, MORNING ESPRESSO, CLOUD GAMING"
             class="raster-input font-bold"
+            style="padding: 10px 14px;"
           />
         </div>
 
         <!-- 3. Cost & Currency -->
         <div class="raster-field">
           <label for="item-amount" class="raster-field-label">MONETARY ALLOCATION ({currency}) *</label>
-          <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 raster-mono font-bold text-muted">
+          <div class="relative flex items-center">
+            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 raster-mono font-bold text-muted pointer-events-none select-none text-base">
               {currency}
             </span>
             <input
@@ -180,7 +181,8 @@
               bind:value={amount}
               required
               placeholder="0.00"
-              class="raster-input pl-8 raster-stat-value text-xl font-bold"
+              class="raster-input raster-input-with-prefix raster-stat-value text-xl font-bold"
+              style="padding-left: 2.25rem !important; padding-top: 10px; padding-bottom: 10px; padding-right: 14px;"
             />
           </div>
         </div>

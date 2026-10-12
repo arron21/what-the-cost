@@ -25,6 +25,23 @@
   padding: var(--raster-space-6);
 }
 
+/* Enhanced comfortable text padding for all inputs, selects, and textareas */
+.raster-input,
+.raster-select,
+.raster-textarea {
+  padding: 10px 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.raster-input-with-prefix {
+  padding-left: 2.25rem !important;
+}
+
+.raster-input-with-icon {
+  padding-left: 2.25rem !important;
+}
+
 /* Print and ledger helpers */
 .cell-num {
   text-align: right;

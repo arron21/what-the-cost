@@ -88,13 +88,14 @@
   <div class="raster-card py-4">
     <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3">
       <!-- Search Input -->
-      <div class="relative flex-1">
+      <div class="relative flex-1 flex items-center">
         <Search class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
         <input
           type="text"
           bind:value={searchQuery}
           placeholder="SEARCH LEDGER..."
-          class="raster-input pl-8 py-1.5 text-xs raster-mono"
+          class="raster-input raster-input-with-icon text-xs raster-mono"
+          style="padding-left: 2.25rem !important; padding-top: 8px; padding-bottom: 8px; padding-right: 2rem;"
         />
         {#if searchQuery}
           <button
