@@ -22,7 +22,7 @@
 
 <div class="space-y-6">
   <!-- Metric KPI Cards (4-Column Swiss Grid) -->
-  <div class="raster-grid">
+  <div class="raster-grid mb-6">
     <!-- 01. Total Cost -->
     <div class="col-3 col-lg-6">
       <div class="raster-card raster-card-accent-top">

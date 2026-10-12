@@ -158,7 +158,7 @@
     onToggleWhatIf={handleToggleWhatIf}
   />
 
-  <main class="flex-1 raster-container py-8 space-y-8">
+  <main class="flex-1 raster-container py-8">
     {#if !isLoaded}
       <div class="flex items-center justify-center py-28">
         <span class="raster-mono text-sm tracking-widest text-muted uppercase animate-pulse">
@@ -166,58 +166,68 @@
         </span>
       </div>
     {:else}
-      <!-- Metric Summary Cards & 50/30/20 Metric -->
-      <SummaryCards
-        {stats}
-        horizon={settings.timeHorizon}
-        currency={settings.currency}
-        whatIfActive={settings.whatIfActive}
-        {hasIncome}
-      />
+      <!-- 01. Metric Summary Cards & 50/30/20 Metric -->
+      <section class="raster-section">
+        <SummaryCards
+          {stats}
+          horizon={settings.timeHorizon}
+          currency={settings.currency}
+          whatIfActive={settings.whatIfActive}
+          {hasIncome}
+        />
+      </section>
 
       <!-- What-If Simulator Banner (When active) -->
-      <WhatIfSimulator
-        whatIfActive={settings.whatIfActive}
-        {stats}
-        horizon={settings.timeHorizon}
-        currency={settings.currency}
-        onToggleWhatIf={handleToggleWhatIf}
-        onResetCuts={handleResetCuts}
-        onCutAllWants={handleCutAllWants}
-      />
+      {#if settings.whatIfActive}
+        <section class="raster-section">
+          <WhatIfSimulator
+            whatIfActive={settings.whatIfActive}
+            {stats}
+            horizon={settings.timeHorizon}
+            currency={settings.currency}
+            onToggleWhatIf={handleToggleWhatIf}
+            onResetCuts={handleResetCuts}
+            onCutAllWants={handleCutAllWants}
+          />
+        </section>
+      {/if}
 
-      <!-- Category Allocation Ledger & Capital Retention -->
-      <AnalyticsView
-        {items}
-        {stats}
-        horizon={settings.timeHorizon}
-        currency={settings.currency}
-        whatIfActive={settings.whatIfActive}
-        {hasIncome}
-        onSelectCategoryFilter={(catId) => (activeCategoryFilter = catId)}
-      />
+      <!-- 02. Category Allocation Ledger & Capital Retention -->
+      <section class="raster-section">
+        <AnalyticsView
+          {items}
+          {stats}
+          horizon={settings.timeHorizon}
+          currency={settings.currency}
+          whatIfActive={settings.whatIfActive}
+          {hasIncome}
+          onSelectCategoryFilter={(catId) => (activeCategoryFilter = catId)}
+        />
+      </section>
 
-      <!-- Financial Ledger -->
-      <ItemList
-        {items}
-        horizon={settings.timeHorizon}
-        currency={settings.currency}
-        whatIfActive={settings.whatIfActive}
-        incomeSettings={settings.income}
-        onEditItem={handleEditItem}
-        onDeleteItem={handleDeleteItem}
-        onToggleCut={handleToggleCut}
-        onOpenAddModal={handleOpenAddModal}
-        {activeCategoryFilter}
-      />
+      <!-- 03. Financial Ledger -->
+      <section class="raster-section">
+        <ItemList
+          {items}
+          horizon={settings.timeHorizon}
+          currency={settings.currency}
+          whatIfActive={settings.whatIfActive}
+          incomeSettings={settings.income}
+          onEditItem={handleEditItem}
+          onDeleteItem={handleDeleteItem}
+          onToggleCut={handleToggleCut}
+          onOpenAddModal={handleOpenAddModal}
+          {activeCategoryFilter}
+        />
+      </section>
     {/if}
   </main>
 
-  <!-- Mobile Floating Action Button (Swiss Sharp Button) -->
+  <!-- Mobile Floating Action Button (Swiss Sharp Button, strictly hidden on desktop) -->
   <button
     type="button"
     onclick={handleOpenAddModal}
-    class="sm:hidden fixed bottom-6 right-5 z-40 raster-btn raster-btn-primary"
+    class="mobile-fab-btn fixed bottom-6 right-5 z-40 raster-btn raster-btn-primary"
     style="padding: 12px 18px; box-shadow: var(--raster-shadow-hard); font-weight: 700;"
     aria-label="Add Allocation"
   >

@@ -49,3 +49,25 @@
   font-feature-settings: "tnum" 1;
   font-variant-numeric: tabular-nums;
 }
+
+/* Disciplined Swiss Section Spacing */
+.raster-section {
+  margin-bottom: var(--raster-space-8);
+}
+
+@media (min-width: 1024px) {
+  .raster-section {
+    margin-bottom: var(--raster-space-10);
+  }
+}
+
+/* Mobile FAB Floating Button (strictly hidden on desktop/tablet >= 640px) */
+.mobile-fab-btn {
+  display: none !important;
+}
+
+@media (max-width: 639px) {
+  .mobile-fab-btn {
+    display: inline-flex !important;
+  }
+}
