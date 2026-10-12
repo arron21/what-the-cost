@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { TimeHorizon } from '../types'
-  import { Settings } from '@lucide/svelte'
+  import { Settings, Sun, Moon, Plus, Sparkles } from '@lucide/svelte'
 
   interface Props {
     timeHorizon: TimeHorizon
@@ -24,60 +24,55 @@
     onToggleWhatIf
   }: Props = $props()
 
-  const horizons: { id: TimeHorizon; label: string; short: string }[] = [
-    { id: 'daily', label: 'Day', short: 'Day' },
-    { id: 'weekly', label: 'Week', short: 'Wk' },
-    { id: 'monthly', label: 'Month', short: 'Mo' },
-    { id: 'yearly', label: 'Year', short: 'Yr' },
+  const horizons: { id: TimeHorizon; label: string }[] = [
+    { id: 'daily', label: 'Day' },
+    { id: 'weekly', label: 'Week' },
+    { id: 'monthly', label: 'Month' },
+    { id: 'yearly', label: 'Year' },
   ]
 </script>
 
-<header class="raster-masthead">
+<header class="raster-masthead" style="border-bottom: 1px solid var(--raster-border); background-color: var(--raster-surface);">
   <div class="raster-container">
-    <div class="raster-masthead-inner flex-wrap gap-y-3">
-      <!-- Left: Swiss Brand Lockup -->
-      <div class="flex items-center gap-3">
+    <!-- Top Row: Brand & Quick Controls -->
+    <div class="flex items-center justify-between py-3.5 sm:py-4 gap-3">
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5">
         <span 
-          style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--raster-accent); color: #ffffff; font-weight: 800; font-family: var(--raster-font-mono); font-size: 15px; border-radius: var(--raster-radius);"
-          title="Swiss Design System"
-        >
-          +
-        </span>
-        <div class="flex items-baseline gap-2">
-          <span style="font-family: var(--raster-font-display); font-weight: 800; font-size: 1.25rem; letter-spacing: -0.03em; color: var(--raster-fg-primary);">
-            WHAT THE COST
-          </span>
-          <span class="raster-tag raster-tag-accent">PWA</span>
-        </div>
-        <span class="raster-label hidden md:inline" style="border-left: 1px solid var(--raster-border); padding-left: 12px; margin-left: 4px;">
-          Needs vs. Wants Ledger
+          style="display: inline-block; width: 8px; height: 8px; background: var(--raster-accent); border-radius: 1px;"
+          aria-hidden="true"
+        ></span>
+        <span style="font-family: var(--raster-font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--raster-fg-primary);">
+          What The Cost
         </span>
       </div>
 
-      <!-- Right: Horizon Switcher & Controls -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        <!-- Segmented Time Period Filter -->
-        <div class="raster-btn-group">
-          {#each horizons as h}
-            <button
-              type="button"
-              onclick={() => onSelectHorizon(h.id)}
-              class="raster-btn {timeHorizon === h.id ? 'is-active' : ''}"
-              title={`View normalized per ${h.label.toLowerCase()}`}
-            >
-              {h.short}
-            </button>
-          {/each}
-        </div>
+      <!-- Desktop Horizon Switcher (Centered on desktop) -->
+      <div class="hidden sm:inline-flex raster-btn-group">
+        {#each horizons as h}
+          <button
+            type="button"
+            onclick={() => onSelectHorizon(h.id)}
+            class="raster-btn {timeHorizon === h.id ? 'is-active' : ''}"
+            style="min-width: 60px; font-size: 12px; font-weight: 500;"
+          >
+            {h.label}
+          </button>
+        {/each}
+      </div>
 
+      <!-- Actions -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
         <!-- What-If Simulator Toggle -->
         <button
           type="button"
           onclick={onToggleWhatIf}
           class="raster-btn {whatIfActive ? 'raster-btn-accent' : 'raster-btn-outline'} raster-btn-sm"
-          title="Toggle 'What-If I Cut This Want?' Sandbox Simulator"
+          title="Toggle What-If Simulator"
+          style="font-size: 11px; font-weight: 600;"
         >
-          <span>{whatIfActive ? '● SANDBOX ON' : 'SIMULATE WHAT-IF'}</span>
+          <Sparkles class="w-3 h-3 mr-1" />
+          <span>{whatIfActive ? 'What-If On' : 'What-If'}</span>
         </button>
 
         <!-- Theme Toggle -->
@@ -85,10 +80,15 @@
           type="button"
           onclick={onToggleTheme}
           class="raster-btn raster-btn-ghost raster-btn-sm"
-          title="Toggle Carbon (Dark) / Paper (Light) Theme"
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           aria-label="Toggle Theme"
+          style="padding: 6px 8px;"
         >
-          <span>{theme === 'dark' ? '◐ CARBON' : '◐ PAPER'}</span>
+          {#if theme === 'dark'}
+            <Sun class="w-4 h-4 text-secondary" />
+          {:else}
+            <Moon class="w-4 h-4 text-secondary" />
+          {/if}
         </button>
 
         <!-- Settings Button -->
@@ -96,21 +96,39 @@
           type="button"
           onclick={onOpenSettings}
           class="raster-btn raster-btn-ghost raster-btn-sm"
-          title="Configuration & Data Backup"
+          title="Settings"
           aria-label="Settings"
+          style="padding: 6px 8px;"
         >
-          <Settings class="w-3.5 h-3.5" />
-          <span class="hidden lg:inline">CONFIG</span>
+          <Settings class="w-4 h-4 text-secondary" />
         </button>
 
-        <!-- Add Allocation Button -->
+        <!-- Add Allocation Button (Desktop only, mobile has FAB) -->
         <button
           type="button"
           onclick={onOpenAddModal}
           class="raster-btn raster-btn-primary raster-btn-sm hidden sm:inline-flex"
+          style="font-size: 12px; font-weight: 600;"
         >
-          <span>+ ALLOCATION</span>
+          <Plus class="w-3.5 h-3.5 mr-1" />
+          <span>Add</span>
         </button>
+      </div>
+    </div>
+
+    <!-- Mobile Horizon Switcher (Full-width row on mobile <= 640px) -->
+    <div class="sm:hidden pb-3 pt-1">
+      <div class="raster-btn-group raster-btn-group-responsive w-full">
+        {#each horizons as h}
+          <button
+            type="button"
+            onclick={() => onSelectHorizon(h.id)}
+            class="raster-btn {timeHorizon === h.id ? 'is-active' : ''}"
+            style="font-size: 12px; font-weight: 500; min-height: 38px;"
+          >
+            {h.label}
+          </button>
+        {/each}
       </div>
     </div>
   </div>

@@ -2,7 +2,7 @@
   import type { IncomeSettings, Item, TimeHorizon } from '../types'
   import { FREQUENCY_LABELS, PRESET_CATEGORIES } from '../types'
   import { formatCurrency, normalizeCost, toHoursWorked } from '../utils/costNormalizer'
-  import { Search, Plus } from '@lucide/svelte'
+  import { Search, Plus, Trash2, Edit2, Scissors, RotateCcw } from '@lucide/svelte'
 
   interface Props {
     items: Item[]
@@ -68,221 +68,251 @@
   })
 
   const horizonSuffix: Record<TimeHorizon, string> = {
-    daily: '/ day',
-    weekly: '/ wk',
-    monthly: '/ mo',
-    yearly: '/ yr',
+    daily: '/day',
+    weekly: '/wk',
+    monthly: '/mo',
+    yearly: '/yr',
   }
 </script>
 
-<div class="space-y-6">
-  <!-- Architectural Section Header -->
-  <div class="raster-section-header">
-    <span class="raster-index">[ 03 ]</span>
-    <h2 class="raster-h2">FINANCIAL LEDGER // ALLOCATIONS</h2>
-    <div class="raster-rule"></div>
-    <span class="raster-meta">{filteredItems().length} ITEMS ACTIVE</span>
+<div class="space-y-4 sm:space-y-5">
+  <!-- Section Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-baseline gap-2.5">
+      <h2 class="text-base sm:text-lg font-bold tracking-tight text-primary">Expenses & Allocations</h2>
+      <span class="text-xs text-muted">({filteredItems().length})</span>
+    </div>
+
+    <!-- Desktop Add Button -->
+    <button
+      type="button"
+      onclick={onOpenAddModal}
+      class="raster-btn raster-btn-primary raster-btn-sm hidden sm:inline-flex"
+      style="font-size: 12px; font-weight: 600;"
+    >
+      <Plus class="w-3.5 h-3.5 mr-1" />
+      <span>Add Expense</span>
+    </button>
   </div>
 
-  <!-- Controls Bar (Search, Type Filter, Category, Sort) -->
-  <div class="raster-card py-4">
-    <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3">
-      <!-- Search Input -->
-      <div class="relative flex-1 flex items-center">
-        <Search class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+  <!-- Controls Bar (Search, Type, Category, Sort) -->
+  <div class="raster-card p-3 sm:p-4">
+    <div class="flex flex-col gap-3">
+      <!-- Row 1: Search -->
+      <div class="relative w-full flex items-center">
+        <Search class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
         <input
           type="text"
           bind:value={searchQuery}
-          placeholder="SEARCH LEDGER..."
-          class="raster-input raster-input-with-icon text-xs raster-mono"
-          style="padding-left: 2.25rem !important; padding-top: 8px; padding-bottom: 8px; padding-right: 2rem;"
+          placeholder="Search expenses..."
+          class="raster-input w-full text-xs"
+          style="padding-left: 2.25rem !important; padding-right: 2rem; min-height: 40px;"
         />
         {#if searchQuery}
           <button
             type="button"
             onclick={() => (searchQuery = '')}
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-primary"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-primary p-1"
+            aria-label="Clear search"
           >
             ✕
           </button>
         {/if}
       </div>
 
-      <!-- Segmented Type Selector -->
-      <div class="raster-btn-group shrink-0 self-start md:self-auto">
-        <button
-          type="button"
-          onclick={() => (selectedType = 'all')}
-          class="raster-btn {selectedType === 'all' ? 'is-active' : ''}"
-        >
-          ALL ({items.length})
-        </button>
-        <button
-          type="button"
-          onclick={() => (selectedType = 'need')}
-          class="raster-btn {selectedType === 'need' ? 'is-active' : ''}"
-        >
-          NEEDS ({items.filter(i => i.type === 'need').length})
-        </button>
-        <button
-          type="button"
-          onclick={() => (selectedType = 'want')}
-          class="raster-btn {selectedType === 'want' ? 'is-active' : ''}"
-        >
-          WANTS ({items.filter(i => i.type === 'want').length})
-        </button>
-      </div>
-
-      <!-- Category Filter -->
-      <div class="flex items-center gap-2 shrink-0">
-        <select
-          bind:value={selectedCategory}
-          class="raster-select text-xs py-1.5"
-        >
-          <option value="">ALL CATEGORIES</option>
-          {#each PRESET_CATEGORIES as cat}
-            <option value={cat.id}>{cat.name.toUpperCase()}</option>
-          {/each}
-        </select>
-        {#if selectedCategory}
+      <!-- Row 2: Type Filter and Dropdowns -->
+      <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5 sm:gap-3">
+        <!-- Type Filter Button Group -->
+        <div class="raster-btn-group raster-btn-group-responsive sm:w-auto shrink-0">
           <button
             type="button"
-            onclick={() => (selectedCategory = '')}
-            class="raster-btn raster-btn-ghost raster-btn-sm"
+            onclick={() => (selectedType = 'all')}
+            class="raster-btn {selectedType === 'all' ? 'is-active' : ''}"
+            style="font-size: 12px; font-weight: 500; min-height: 38px;"
           >
-            CLEAR
+            All ({items.length})
           </button>
-        {/if}
-      </div>
+          <button
+            type="button"
+            onclick={() => (selectedType = 'need')}
+            class="raster-btn {selectedType === 'need' ? 'is-active' : ''}"
+            style="font-size: 12px; font-weight: 500; min-height: 38px;"
+          >
+            Needs ({items.filter(i => i.type === 'need').length})
+          </button>
+          <button
+            type="button"
+            onclick={() => (selectedType = 'want')}
+            class="raster-btn {selectedType === 'want' ? 'is-active' : ''}"
+            style="font-size: 12px; font-weight: 500; min-height: 38px;"
+          >
+            Wants ({items.filter(i => i.type === 'want').length})
+          </button>
+        </div>
 
-      <!-- Sort Filter -->
-      <div class="shrink-0">
-        <select
-          bind:value={sortBy}
-          class="raster-select text-xs py-1.5"
-        >
-          <option value="cost_desc">COST: HIGH → LOW</option>
-          <option value="cost_asc">COST: LOW → HIGH</option>
-          <option value="name">NAME (A–Z)</option>
-          <option value="newest">RECENT</option>
-        </select>
+        <!-- Dropdowns: 2 columns on mobile, inline on desktop -->
+        <div class="grid grid-cols-2 sm:flex items-center gap-2">
+          <!-- Category Select -->
+          <div class="flex items-center gap-1.5 min-w-0">
+            <select
+              bind:value={selectedCategory}
+              class="raster-select text-xs w-full sm:w-auto py-2"
+              style="min-height: 38px;"
+            >
+              <option value="">All Categories</option>
+              {#each PRESET_CATEGORIES as cat}
+                <option value={cat.id}>{cat.name}</option>
+              {/each}
+            </select>
+            {#if selectedCategory}
+              <button
+                type="button"
+                onclick={() => (selectedCategory = '')}
+                class="raster-btn raster-btn-ghost raster-btn-sm shrink-0 px-2"
+                title="Clear category filter"
+              >
+                ✕
+              </button>
+            {/if}
+          </div>
+
+          <!-- Sort Select -->
+          <select
+            bind:value={sortBy}
+            class="raster-select text-xs w-full sm:w-auto py-2"
+            style="min-height: 38px;"
+          >
+            <option value="cost_desc">Highest Cost</option>
+            <option value="cost_asc">Lowest Cost</option>
+            <option value="name">Name (A–Z)</option>
+            <option value="newest">Recently Added</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Items Ledger List -->
+  <!-- Expenses List -->
   {#if filteredItems().length === 0}
     <div class="raster-card py-16 text-center">
-      <div class="raster-label mb-2">[ EMPTY LEDGER ]</div>
-      <p class="raster-body mb-4">No allocations match your filter criteria.</p>
+      <p class="text-sm font-medium text-secondary mb-1">No expenses found</p>
+      <p class="text-xs text-muted mb-4">Try clearing filters or add a new expense.</p>
       <button
         type="button"
         onclick={onOpenAddModal}
         class="raster-btn raster-btn-primary raster-btn-sm"
       >
-        <span>+ RECORD FIRST ALLOCATION</span>
+        <Plus class="w-3.5 h-3.5 mr-1" />
+        <span>Add Expense</span>
       </button>
     </div>
   {:else}
-    <div class="border-hairline" style="background-color: var(--raster-surface);">
-      {#each filteredItems() as item, idx (item.id)}
+    <div class="border-hairline divide-y divide-border-subtle" style="background-color: var(--raster-surface);">
+      {#each filteredItems() as item (item.id)}
         {@const normCost = normalizeCost(item.amount, item.frequency, horizon)}
         {@const hoursWorked = toHoursWorked(normCost, incomeSettings)}
         {@const categoryDef = PRESET_CATEGORIES.find((c) => c.id === item.category)}
         {@const isCut = whatIfActive && item.isSimulatedCut}
 
         <div 
-          class="p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 transition-colors hover:bg-surface-subtle"
-          style="border-bottom: 1px solid var(--raster-border-subtle); {isCut ? 'opacity: 0.55; background-color: var(--raster-surface-subtle);' : ''}"
+          class="p-3.5 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-colors hover:bg-surface-subtle"
+          style={isCut ? 'opacity: 0.55; background-color: var(--raster-surface-subtle);' : ''}
         >
           <!-- Left: Identification & Metadata -->
-          <div class="flex items-start gap-3 min-w-0">
-            <span class="raster-mono text-xs text-muted mt-0.5" style="width: 28px;">
-              [{String(idx + 1).padStart(2, '0')}]
-            </span>
+          <div class="min-w-0 w-full sm:w-auto flex-1">
+            <div class="flex items-center justify-between sm:justify-start gap-2">
+              <span class="font-semibold text-sm text-primary truncate {isCut ? 'line-through' : ''}">
+                {item.name}
+              </span>
 
-            <div>
-              <div class="flex flex-wrap items-center gap-2">
+              <!-- Type Badge -->
+              {#if item.type === 'need'}
+                <span class="raster-tag raster-tag-solid text-[10px] py-0.5 px-1.5 shrink-0">Need</span>
+              {:else}
+                <span class="raster-tag text-[10px] py-0.5 px-1.5 shrink-0" style="color: var(--raster-accent); border-color: currentColor;">Want</span>
+              {/if}
+
+              <!-- Mobile Amount on the top right for compact banking feel -->
+              <div class="sm:hidden text-right shrink-0">
                 <span class="font-bold text-sm text-primary {isCut ? 'line-through' : ''}">
-                  {item.name}
+                  {formatCurrency(normCost, currency)}
                 </span>
+                <span class="text-[10px] text-muted">{horizonSuffix[horizon]}</span>
+              </div>
+            </div>
 
-                <!-- Type tag -->
-                {#if item.type === 'need'}
-                  <span class="raster-tag raster-tag-solid" style="font-size: 9px; padding: 1px 4px;">REQ</span>
-                {:else}
-                  <span class="raster-tag raster-tag-accent" style="font-size: 9px; padding: 1px 4px;">OPT</span>
-                {/if}
-
-                <!-- Frequency tag -->
-                <span class="raster-tag" style="font-size: 9px; padding: 1px 4px;">
-                  {FREQUENCY_LABELS[item.frequency].toUpperCase()}
+            <!-- Subtitle info: Category, Frequency, Notes -->
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted mt-1">
+              <span class="text-secondary font-medium">{categoryDef?.name || item.category}</span>
+              <span>•</span>
+              <span>{FREQUENCY_LABELS[item.frequency]}</span>
+              {#if item.notes}
+                <span>•</span>
+                <span class="truncate max-w-[200px] sm:max-w-xs">{item.notes}</span>
+              {/if}
+              {#if item.frequency !== horizon}
+                <span class="hidden sm:inline text-muted">
+                  ({formatCurrency(item.amount, currency)} {item.frequency})
                 </span>
-
-                {#if isCut}
-                  <span class="raster-tag raster-tag-accent">
-                    CUT SIMULATED (+{formatCurrency(normCost, currency)} {horizonSuffix[horizon]})
-                  </span>
-                {/if}
-              </div>
-
-              <!-- Category & notes -->
-              <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted mt-1">
-                <span class="font-medium text-secondary">{categoryDef?.name || item.category}</span>
-                {#if item.notes}
-                  <span>//</span>
-                  <span class="italic truncate max-w-sm">{item.notes}</span>
-                {/if}
-                {#if item.date}
-                  <span>//</span>
-                  <span class="raster-mono">{item.date}</span>
-                {/if}
-              </div>
-
-              <!-- Tags -->
-              {#if item.tags && item.tags.length > 0}
-                <div class="flex flex-wrap gap-1 mt-1.5">
-                  {#each item.tags as tag}
-                    <span class="raster-mono text-[10px] text-muted">
-                      #{tag}
-                    </span>
-                  {/each}
-                </div>
+              {/if}
+              {#if hoursWorked}
+                <span>•</span>
+                <span class="text-secondary">
+                  ⏱ {hoursWorked.formatted} work
+                </span>
               {/if}
             </div>
+
+            <!-- Tags -->
+            {#if item.tags && item.tags.length > 0}
+              <div class="flex flex-wrap gap-1 mt-1.5">
+                {#each item.tags as tag}
+                  <span class="text-[10px] text-muted bg-surface-subtle px-1.5 py-0.5 border border-border-subtle">
+                    #{tag}
+                  </span>
+                {/each}
+              </div>
+            {/if}
+
+            {#if isCut}
+              <div class="mt-1 text-xs font-medium" style="color: var(--raster-accent);">
+                Simulated Cut (+{formatCurrency(normCost, currency)}{horizonSuffix[horizon]})
+              </div>
+            {/if}
           </div>
 
-          <!-- Right: Tabular Amount, Wage Math & Action Controls -->
-          <div class="flex items-center justify-between md:justify-end gap-4 w-full md:w-auto shrink-0 border-t md:border-t-0 pt-2 md:pt-0 border-dashed border-border-subtle">
-            <div class="text-left md:text-right">
-              <div class="raster-stat-value text-xl font-bold {isCut ? 'line-through' : ''}">
+          <!-- Right: Desktop Amount & Action Buttons -->
+          <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border-subtle">
+            <!-- Desktop Amount -->
+            <div class="hidden sm:block text-right">
+              <div class="text-base font-bold text-primary {isCut ? 'line-through' : ''}">
                 {formatCurrency(normCost, currency)}
-                <span class="raster-label font-normal text-muted text-[10px]">{horizonSuffix[horizon]}</span>
+                <span class="text-xs font-normal text-muted">{horizonSuffix[horizon]}</span>
               </div>
-
               {#if item.frequency !== horizon}
-                <div class="raster-mono text-xs text-muted">
+                <div class="text-[11px] text-muted">
                   {formatCurrency(item.amount, currency)} {item.frequency}
-                </div>
-              {/if}
-
-              {#if hoursWorked}
-                <div class="raster-mono text-[11px]" style="color: var(--raster-accent);">
-                  ⏱ {hoursWorked.formatted} work
                 </div>
               {/if}
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
               {#if item.type === 'want'}
                 <button
                   type="button"
                   onclick={() => onToggleCut(item.id)}
                   class="raster-btn {item.isSimulatedCut ? 'raster-btn-accent' : 'raster-btn-outline'} raster-btn-sm"
-                  title={item.isSimulatedCut ? 'Restore this want' : 'Simulate cutting this want'}
+                  title={item.isSimulatedCut ? 'Restore this item' : 'Simulate cutting this item'}
+                  style="font-size: 11px; padding: 4px 8px;"
                 >
-                  <span>{item.isSimulatedCut ? 'RESTORE' : 'CUT'}</span>
+                  {#if item.isSimulatedCut}
+                    <RotateCcw class="w-3 h-3 mr-1" />
+                    <span>Restore</span>
+                  {:else}
+                    <Scissors class="w-3 h-3 mr-1" />
+                    <span>Cut</span>
+                  {/if}
                 </button>
               {/if}
 
@@ -291,8 +321,10 @@
                 onclick={() => onEditItem(item)}
                 class="raster-btn raster-btn-ghost raster-btn-sm"
                 title="Edit Entry"
+                style="padding: 4px 8px; font-size: 11px;"
               >
-                <span>EDIT</span>
+                <Edit2 class="w-3 h-3 mr-1" />
+                <span>Edit</span>
               </button>
 
               <button
@@ -300,8 +332,9 @@
                 onclick={() => onDeleteItem(item.id)}
                 class="raster-btn raster-btn-ghost raster-btn-sm"
                 title="Delete Entry"
+                style="padding: 4px 8px; font-size: 11px;"
               >
-                <span style="color: var(--raster-accent);">DEL</span>
+                <Trash2 class="w-3 h-3 text-secondary hover:text-accent" />
               </button>
             </div>
           </div>

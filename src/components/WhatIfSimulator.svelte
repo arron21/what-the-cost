@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { BudgetStats, TimeHorizon } from '../types'
   import { formatCurrency, normalizeCost } from '../utils/costNormalizer'
+  import { Sparkles, RotateCcw, Scissors, X } from '@lucide/svelte'
 
   interface Props {
     whatIfActive: boolean
@@ -22,7 +23,13 @@
     onCutAllWants,
   }: Props = $props()
 
-  // Compute annualized simulated savings
+  const horizonSuffix: Record<TimeHorizon, string> = {
+    daily: '/day',
+    weekly: '/wk',
+    monthly: '/mo',
+    yearly: '/yr',
+  }
+
   let annualSavings = $derived(
     horizon === 'yearly' 
       ? stats.simulatedSavings 
@@ -31,42 +38,47 @@
 </script>
 
 {#if whatIfActive}
-  <div class="raster-callout raster-callout-accent" style="background-color: var(--raster-surface); border: 1px solid var(--raster-border); border-left: 3px solid var(--raster-accent);">
+  <div 
+    class="raster-card p-4 sm:p-5" 
+    style="border-left: 3px solid var(--raster-accent); background-color: var(--raster-surface);"
+  >
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
         <div class="flex items-center gap-2 mb-1">
-          <span class="raster-label raster-label-accent">// SANDBOX SIMULATOR ACTIVE</span>
-          <span class="raster-tag raster-tag-accent" style="font-size: 9px; padding: 1px 4px;">EXPERIMENTAL</span>
+          <Sparkles class="w-3.5 h-3.5 text-secondary" style="color: var(--raster-accent);" />
+          <span class="text-xs font-semibold uppercase tracking-wider text-primary">What-If Simulation</span>
         </div>
-        <p class="raster-body text-sm" style="color: var(--raster-fg-primary);">
+        <p class="text-sm text-secondary">
           {#if stats.cutWantsCount > 0}
-            Simulating cutting <strong style="color: var(--raster-accent);">{stats.cutWantsCount}</strong> discretionary item{stats.cutWantsCount > 1 ? 's' : ''}:
-            Reclaiming <strong class="raster-mono" style="color: var(--raster-signal-emerald);">{formatCurrency(stats.simulatedSavings, currency)}</strong>/{horizon === 'daily' ? 'day' : horizon === 'weekly' ? 'wk' : horizon === 'monthly' ? 'mo' : 'yr'}
-            <span class="raster-mono text-muted">({formatCurrency(annualSavings, currency)} / yr)</span>
+            Cutting <strong>{stats.cutWantsCount}</strong> discretionary item{stats.cutWantsCount > 1 ? 's' : ''} saves
+            <strong style="color: var(--raster-signal-emerald);">{formatCurrency(stats.simulatedSavings, currency)}</strong>{horizonSuffix[horizon]}
+            <span class="text-muted">({formatCurrency(annualSavings, currency)}/yr)</span>
           {:else}
-            Tap any <strong style="color: var(--raster-accent);">Want</strong> in the ledger below to simulate cutting it and observe real-time capital retention.
+            Tap "Cut" on any discretionary want in the expenses list below to test how cutting it impacts your budget.
           {/if}
         </p>
       </div>
 
-      <div class="flex items-center gap-2 shrink-0">
+      <div class="flex items-center gap-2 shrink-0 w-full md:w-auto">
         {#if stats.cutWantsCount > 0}
           <button
             type="button"
             onclick={onResetCuts}
-            class="raster-btn raster-btn-outline raster-btn-sm"
-            title="Restore all simulated cuts"
+            class="raster-btn raster-btn-outline raster-btn-sm flex-1 md:flex-initial"
+            title="Restore all cuts"
           >
-            <span>[ RESET CUTS ]</span>
+            <RotateCcw class="w-3 h-3 mr-1" />
+            <span>Reset</span>
           </button>
         {:else}
           <button
             type="button"
             onclick={onCutAllWants}
-            class="raster-btn raster-btn-accent raster-btn-sm"
-            title="Simulate cutting all non-essentials"
+            class="raster-btn raster-btn-accent raster-btn-sm flex-1 md:flex-initial"
+            title="Simulate cutting all wants"
           >
-            <span>[ CUT ALL WANTS ]</span>
+            <Scissors class="w-3 h-3 mr-1" />
+            <span>Cut All Wants</span>
           </button>
         {/if}
 
@@ -74,9 +86,10 @@
           type="button"
           onclick={onToggleWhatIf}
           class="raster-btn raster-btn-ghost raster-btn-sm"
-          title="Exit Sandbox Mode"
+          title="Exit Simulator"
         >
-          <span>✕ CLOSE</span>
+          <X class="w-3.5 h-3.5 mr-1" />
+          <span>Exit</span>
         </button>
       </div>
     </div>

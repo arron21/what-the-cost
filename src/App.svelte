@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { Plus } from '@lucide/svelte'
   import type { Item, TimeHorizon, UserSettings } from './types'
   import { 
     db, 
@@ -9,7 +10,7 @@
     saveItem, 
     deleteItemById, 
     seedSampleData, 
-    clearAllItems,
+    clearAllItems, 
     DEFAULT_SETTINGS 
   } from './services/db'
   import { computeBudgetStats } from './utils/costNormalizer'
@@ -158,12 +159,10 @@
     onToggleWhatIf={handleToggleWhatIf}
   />
 
-  <main class="flex-1 raster-container py-8">
+  <main class="flex-1 raster-container py-5 sm:py-8">
     {#if !isLoaded}
-      <div class="flex items-center justify-center py-28">
-        <span class="raster-mono text-sm tracking-widest text-muted uppercase animate-pulse">
-          INITIALIZING SWISS LEDGER...
-        </span>
+      <div class="flex items-center justify-center py-28 text-muted text-sm">
+        Loading...
       </div>
     {:else}
       <!-- 01. Metric Summary Cards & 50/30/20 Metric -->
@@ -192,7 +191,7 @@
         </section>
       {/if}
 
-      <!-- 02. Category Allocation Ledger & Capital Retention -->
+      <!-- 02. Category Allocation & Savings Rate -->
       <section class="raster-section">
         <AnalyticsView
           {items}
@@ -223,27 +222,28 @@
     {/if}
   </main>
 
-  <!-- Mobile Floating Action Button (Swiss Sharp Button, strictly hidden on desktop) -->
+  <!-- Mobile Floating Action Button (Clean minimal FAB, hidden on screens >= 640px) -->
   <button
     type="button"
     onclick={handleOpenAddModal}
-    class="mobile-fab-btn fixed bottom-6 right-5 z-40 raster-btn raster-btn-primary"
-    style="padding: 12px 18px; box-shadow: var(--raster-shadow-hard); font-weight: 700;"
-    aria-label="Add Allocation"
+    class="mobile-fab-btn fixed bottom-5 right-5 z-40 raster-btn raster-btn-primary shadow-lg"
+    style="padding: 12px 18px; font-weight: 600; font-size: 13px;"
+    aria-label="Add Expense"
   >
-    + ALLOCATION
+    <Plus class="w-4 h-4 mr-1.5" />
+    <span>Add</span>
   </button>
 
-  <!-- Swiss Architectural Footer -->
-  <footer class="border-top py-6 mt-12 raster-label" style="background-color: var(--raster-surface);">
-    <div class="raster-container flex flex-col sm:flex-row justify-between items-center gap-2">
+  <!-- Minimalist Footer -->
+  <footer class="border-top py-5 mt-10" style="background-color: var(--raster-surface);">
+    <div class="raster-container flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-muted">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-primary">WHAT THE COST</span>
-        <span>//</span>
-        <span>SWISS INTERNATIONAL TYPOGRAPHIC STYLE</span>
+        <span class="font-bold text-primary">What The Cost</span>
+        <span>•</span>
+        <span>Local-first budgeting</span>
       </div>
-      <div class="raster-mono text-muted text-[11px]">
-        100% LOCAL-FIRST PWA · INDEXEDDB STORAGE · ZERO CLOUD TELEMETRY
+      <div>
+        100% private • Stored locally in your browser
       </div>
     </div>
   </footer>

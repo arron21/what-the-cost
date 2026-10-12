@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { IncomeFrequency, UserSettings } from '../types'
   import { exportToJSON, exportToCSV, importFromJSON, importFromCSV } from '../utils/exportImport'
+  import { X, Download, Upload, RefreshCw, Trash2, CheckCircle, AlertCircle } from '@lucide/svelte'
 
   interface Props {
     isOpen: boolean
@@ -63,7 +64,7 @@
     const file = input.files[0]
     const res = await importFromJSON(file)
     if (res.success) {
-      statusMessage = { type: 'success', text: `Restored ${res.count} allocations from JSON backup.` }
+      statusMessage = { type: 'success', text: `Restored ${res.count} items from JSON backup.` }
       onDataChanged()
     } else {
       statusMessage = { type: 'error', text: res.error || 'Failed to import JSON' }
@@ -77,7 +78,7 @@
     const file = input.files[0]
     const res = await importFromCSV(file)
     if (res.success) {
-      statusMessage = { type: 'success', text: `Imported ${res.count} allocations from CSV ledger.` }
+      statusMessage = { type: 'success', text: `Imported ${res.count} items from CSV.` }
       onDataChanged()
     } else {
       statusMessage = { type: 'error', text: res.error || 'Failed to import CSV' }
@@ -115,51 +116,54 @@
       tabindex="-1"
     >
       <!-- Header -->
-      <div class="flex justify-between items-baseline pb-3 border-bottom mb-4">
-        <div>
-          <span class="raster-index">[ CONFIG ]</span>
-          <h3 class="raster-h3 inline ml-2">SYSTEM PARAMETERS & LEDGER</h3>
-        </div>
+      <div class="flex justify-between items-center pb-3 border-bottom mb-4">
+        <h3 class="text-base font-bold text-primary">Settings</h3>
         <button
           type="button"
           onclick={onClose}
           class="raster-btn raster-btn-ghost raster-btn-sm"
           aria-label="Close Settings modal"
         >
-          ✕
+          <X class="w-4 h-4 text-muted hover:text-primary" />
         </button>
       </div>
 
       {#if statusMessage}
-        <div class="raster-callout {statusMessage.type === 'success' ? '' : 'raster-callout-accent'} mb-4">
-          <span class="raster-label">{statusMessage.type === 'success' ? 'STATUS: SUCCESS' : 'STATUS: ERROR'}</span>
-          <span class="raster-small">{statusMessage.text}</span>
+        <div class="p-3 mb-4 border border-border flex items-center gap-2 text-xs {statusMessage.type === 'success' ? 'bg-surface-subtle text-primary' : 'text-accent border-accent'}">
+          {#if statusMessage.type === 'success'}
+            <CheckCircle class="w-4 h-4 text-emerald-600 shrink-0" />
+          {:else}
+            <AlertCircle class="w-4 h-4 text-accent shrink-0" />
+          {/if}
+          <span>{statusMessage.text}</span>
         </div>
       {/if}
 
       <div class="space-y-5">
         <!-- 1. Income Benchmark -->
-        <div class="raster-card raster-card-subtle p-4 space-y-3">
+        <div class="p-4 border border-border space-y-3" style="background-color: var(--raster-surface);">
           <div class="flex justify-between items-center">
             <div>
-              <span class="raster-label">// INCOME BENCHMARK</span>
-              <div class="font-bold text-sm text-primary">Baseline Capital Inflow</div>
+              <div class="font-bold text-sm text-primary">Income Benchmark</div>
+              <p class="text-xs text-muted">Used for 50/30/20 ratios and work-hour calculations</p>
             </div>
             <button
               type="button"
               onclick={() => (incomeEnabled = !incomeEnabled)}
-              class="raster-btn {incomeEnabled ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm"
+              class="raster-btn {incomeEnabled ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm text-xs"
             >
-              <span>{incomeEnabled ? 'ENABLED' : 'DISABLED'}</span>
+              <span>{incomeEnabled ? 'Enabled' : 'Disabled'}</span>
             </button>
           </div>
 
           {#if incomeEnabled}
-            <div class="grid grid-cols-2 gap-3 pt-2">
-              <div class="raster-field">
-                <label for="income-amount" class="raster-field-label">TAKE-HOME AMOUNT ({currency})</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div class="space-y-1">
+                <label for="income-amount" class="block text-xs font-semibold text-secondary">
+                  Take-Home Income ({currency})
+                </label>
                 <div class="relative flex items-center">
-                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 raster-mono font-bold text-muted pointer-events-none select-none text-sm">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-muted pointer-events-none text-xs">
                     {currency}
                   </span>
                   <input
@@ -167,48 +171,51 @@
                     type="number"
                     bind:value={incomeAmount}
                     placeholder="4500"
-                    class="raster-input raster-input-with-prefix font-bold"
-                    style="padding-left: 2.25rem !important; padding-top: 10px; padding-bottom: 10px; padding-right: 14px;"
+                    class="raster-input w-full font-bold text-sm"
+                    style="padding-left: 2rem !important; min-height: 40px;"
                   />
                 </div>
               </div>
 
-              <div class="raster-field">
-                <label for="income-freq" class="raster-field-label">INFLOW FREQUENCY</label>
+              <div class="space-y-1">
+                <label for="income-freq" class="block text-xs font-semibold text-secondary">Income Frequency</label>
                 <select
                   id="income-freq"
                   bind:value={incomeFrequency}
-                  class="raster-select"
-                  style="padding: 10px 14px;"
+                  class="raster-select w-full text-xs"
+                  style="min-height: 40px;"
                 >
-                  <option value="monthly">MONTHLY</option>
-                  <option value="yearly">YEARLY</option>
-                  <option value="hourly">HOURLY WAGE</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                  <option value="hourly">Hourly Wage</option>
                 </select>
               </div>
 
-              <div class="col-span-2 raster-field">
-                <label for="hours-week" class="raster-field-label">WORK HOURS / WEEK (HOURLY NORMALIZER)</label>
+              <div class="col-span-1 sm:col-span-2 space-y-1">
+                <label for="hours-week" class="block text-xs font-semibold text-secondary">
+                  Weekly Work Hours (for Hourly Normalizer)
+                </label>
                 <input
                   id="hours-week"
                   type="number"
                   bind:value={hoursPerWeek}
                   placeholder="40"
-                  class="raster-input raster-mono text-xs"
-                  style="padding: 10px 14px;"
+                  class="raster-input w-full text-xs"
+                  style="min-height: 40px;"
                 />
               </div>
             </div>
           {/if}
         </div>
 
-        <!-- 2. Currency Specification -->
-        <div class="raster-field">
-          <label for="settings-curr" class="raster-field-label">CURRENCY SYMBOL</label>
+        <!-- 2. Currency Selection -->
+        <div class="space-y-1.5">
+          <label for="curr-select" class="block text-xs font-semibold text-secondary">Base Currency</label>
           <select
-            id="settings-curr"
+            id="curr-select"
             bind:value={currency}
-            class="raster-select"
+            class="raster-select w-full text-xs"
+            style="min-height: 40px;"
           >
             {#each currencies as c}
               <option value={c.symbol}>{c.name}</option>
@@ -216,104 +223,120 @@
           </select>
         </div>
 
-        <!-- 3. Local-First Notice -->
-        <div class="raster-callout">
-          <span class="raster-label">// STORAGE PROTOCOL</span>
-          <span class="raster-small text-secondary">
-            <strong>100% Local-First:</strong> All records are written exclusively to browser IndexedDB. Zero cloud telemetry.
-          </span>
-        </div>
+        <!-- 3. Data Management & Backup -->
+        <div class="p-4 border border-border space-y-3" style="background-color: var(--raster-surface);">
+          <div>
+            <div class="font-bold text-sm text-primary">Data & Backup</div>
+            <p class="text-xs text-muted">Your data is stored locally in your browser (IndexedDB).</p>
+          </div>
 
-        <!-- 4. Data Backup & Restore -->
-        <div>
-          <span class="raster-field-label mb-2 block">DATA MIGRATION // BACKUP & RESTORE</span>
+          <!-- Hidden File Inputs -->
+          <input
+            type="file"
+            accept=".json"
+            bind:this={jsonFileInput}
+            onchange={handleJSONImport}
+            class="hidden"
+          />
+          <input
+            type="file"
+            accept=".csv"
+            bind:this={csvFileInput}
+            onchange={handleCSVImport}
+            class="hidden"
+          />
+
+          <!-- Export/Import Buttons -->
           <div class="grid grid-cols-2 gap-2">
             <button
               type="button"
               onclick={() => exportToJSON(settings)}
               class="raster-btn raster-btn-outline raster-btn-sm"
+              title="Download full JSON backup"
             >
-              <span>BACKUP JSON</span>
+              <Download class="w-3.5 h-3.5 mr-1" />
+              <span>Export JSON</span>
             </button>
 
             <button
               type="button"
               onclick={() => jsonFileInput?.click()}
               class="raster-btn raster-btn-outline raster-btn-sm"
+              title="Restore from JSON backup"
             >
-              <span>RESTORE JSON</span>
+              <Upload class="w-3.5 h-3.5 mr-1" />
+              <span>Import JSON</span>
             </button>
-            <input
-              type="file"
-              accept=".json"
-              bind:this={jsonFileInput}
-              onchange={handleJSONImport}
-              class="hidden"
-            />
 
             <button
               type="button"
-              onclick={exportToCSV}
+              onclick={() => exportToCSV()}
               class="raster-btn raster-btn-outline raster-btn-sm"
+              title="Export as CSV spreadsheet"
             >
-              <span>EXPORT CSV</span>
+              <Download class="w-3.5 h-3.5 mr-1" />
+              <span>Export CSV</span>
             </button>
 
             <button
               type="button"
               onclick={() => csvFileInput?.click()}
               class="raster-btn raster-btn-outline raster-btn-sm"
+              title="Import items from CSV"
             >
-              <span>IMPORT CSV</span>
+              <Upload class="w-3.5 h-3.5 mr-1" />
+              <span>Import CSV</span>
             </button>
-            <input
-              type="file"
-              accept=".csv"
-              bind:this={csvFileInput}
-              onchange={handleCSVImport}
-              class="hidden"
-            />
+          </div>
+
+          <!-- Sample Data & Reset -->
+          <div class="pt-3 border-top flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+            <button
+              type="button"
+              onclick={async () => {
+                if (confirm('Load sample budget items? Existing data will be preserved.')) {
+                  await onSeedData()
+                  statusMessage = { type: 'success', text: 'Sample budget items loaded successfully.' }
+                }
+              }}
+              class="raster-btn raster-btn-ghost raster-btn-sm"
+            >
+              <RefreshCw class="w-3.5 h-3.5 mr-1" />
+              <span>Load Sample Data</span>
+            </button>
+
+            <button
+              type="button"
+              onclick={async () => {
+                if (confirm('Are you sure you want to clear all expenses? This cannot be undone.')) {
+                  await onClearData()
+                  statusMessage = { type: 'success', text: 'All expense data cleared.' }
+                }
+              }}
+              class="raster-btn raster-btn-ghost raster-btn-sm text-accent hover:text-red-700"
+            >
+              <Trash2 class="w-3.5 h-3.5 mr-1" />
+              <span>Clear All Data</span>
+            </button>
           </div>
         </div>
 
-        <!-- 5. Sample Data & Reset -->
-        <div class="pt-3 border-top flex justify-between items-center">
+        <!-- Footer Actions -->
+        <div class="flex items-center justify-end gap-2 pt-3 border-top">
           <button
             type="button"
-            onclick={() => {
-              if (confirm('Load standard reference allocation data?')) {
-                onSeedData()
-                statusMessage = { type: 'success', text: 'Reference allocations loaded.' }
-              }
-            }}
+            onclick={onClose}
             class="raster-btn raster-btn-ghost raster-btn-sm"
           >
-            <span>LOAD REFERENCE DATA</span>
+            Cancel
           </button>
-
-          <button
-            type="button"
-            onclick={() => {
-              if (confirm('Permanently clear all ledger allocations? Ensure you have exported a backup.')) {
-                onClearData()
-                statusMessage = { type: 'success', text: 'Ledger cleared.' }
-              }
-            }}
-            class="raster-btn raster-btn-ghost raster-btn-sm"
-            style="color: var(--raster-accent);"
-          >
-            <span>PURGE LEDGER</span>
-          </button>
-        </div>
-
-        <!-- Footer -->
-        <div class="flex justify-end gap-3 pt-4 border-top">
           <button
             type="button"
             onclick={handleSave}
-            class="raster-btn raster-btn-primary raster-btn-sm"
+            class="raster-btn raster-btn-primary"
+            style="min-width: 120px;"
           >
-            <span>CONFIRM & APPLY</span>
+            Save Settings
           </button>
         </div>
       </div>

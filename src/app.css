@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
-/* Modal and dialog backdrop adhering to Swiss architectural geometry */
+/* Modal and dialog backdrop */
 .raster-modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 500;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14,15 +14,30 @@
 
 .raster-modal-dialog {
   background-color: var(--raster-surface);
-  border: 2px solid var(--raster-border-strong);
-  box-shadow: var(--raster-shadow-hard-lg);
+  border: 1px solid var(--raster-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   border-radius: var(--raster-radius);
   width: 100%;
-  max-width: 580px;
+  max-width: 540px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  padding: var(--raster-space-6);
+  padding: var(--raster-space-5);
+}
+
+/* Mobile bottom-sheet ergonomics for modals on small devices */
+@media (max-width: 640px) {
+  .raster-modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .raster-modal-dialog {
+    max-height: 90vh;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    padding: var(--raster-space-4);
+  }
 }
 
 /* Enhanced comfortable text padding for all inputs, selects, and textareas */
@@ -50,9 +65,15 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Disciplined Swiss Section Spacing */
+/* Disciplined Section Spacing */
 .raster-section {
-  margin-bottom: var(--raster-space-8);
+  margin-bottom: var(--raster-space-6);
+}
+
+@media (min-width: 640px) {
+  .raster-section {
+    margin-bottom: var(--raster-space-8);
+  }
 }
 
 @media (min-width: 1024px) {
