@@ -87,7 +87,13 @@
     onClose()
   }
 
-  const frequencies: Frequency[] = ['daily', 'weekly', 'biweekly', 'monthly', 'quarterly', 'yearly', 'once']
+  // Grouped frequencies for balanced 4-column layout
+  const recurringFrequencies: Frequency[] = ['monthly', 'weekly', 'biweekly', 'daily']
+  const secondaryFrequencies: { freq: Frequency; span: string }[] = [
+    { freq: 'yearly', span: 'col-span-1' },
+    { freq: 'quarterly', span: 'col-span-1' },
+    { freq: 'once', span: 'col-span-2' },
+  ]
 </script>
 
 {#if isOpen}
@@ -110,29 +116,32 @@
       tabindex="-1"
     >
       <!-- Header -->
-      <div class="flex justify-between items-center pb-3 border-bottom mb-4">
-        <h3 class="text-base font-bold text-primary">
-          {editingItem ? 'Edit Expense' : 'Add Expense'}
+      <div class="flex justify-between items-center pb-4 mb-6 border-b border-border">
+        <h3 class="text-lg font-bold tracking-tight text-primary">
+          {editingItem ? 'Edit Expense' : 'New Expense'}
         </h3>
         <button
           type="button"
           onclick={onClose}
           class="raster-btn raster-btn-ghost raster-btn-sm"
+          style="padding: 6px 8px;"
           aria-label="Close modal"
         >
           <X class="w-4 h-4 text-muted hover:text-primary" />
         </button>
       </div>
 
-      <form onsubmit={handleSubmit} class="space-y-4">
+      <form onsubmit={handleSubmit} class="space-y-6">
         <!-- 1. Type: Need vs Want -->
-        <div class="space-y-1.5">
-          <div class="block text-xs font-semibold text-secondary">Expense Classification</div>
-          <div class="grid grid-cols-2 gap-2">
+        <div>
+          <div class="block text-xs font-semibold uppercase tracking-wider text-secondary mb-2">
+            Expense Classification
+          </div>
+          <div class="grid grid-cols-2 gap-3">
             <button
               type="button"
               onclick={() => (type = 'need')}
-              class="raster-btn py-2.5 {type === 'need' ? 'raster-btn-primary' : 'raster-btn-outline'}"
+              class="raster-btn py-3.5 {type === 'need' ? 'raster-btn-primary' : 'raster-btn-outline'}"
               style="font-size: 13px; font-weight: 600;"
             >
               Need (Essential)
@@ -140,64 +149,88 @@
             <button
               type="button"
               onclick={() => (type = 'want')}
-              class="raster-btn py-2.5 {type === 'want' ? 'raster-btn-accent' : 'raster-btn-outline'}"
+              class="raster-btn py-3.5 {type === 'want' ? 'raster-btn-accent' : 'raster-btn-outline'}"
               style="font-size: 13px; font-weight: 600;"
             >
               Want (Discretionary)
             </button>
           </div>
-          <p class="text-[11px] text-muted">
-            {type === 'need' ? 'Essentials like housing, groceries, utilities, and transport.' : 'Discretionary spending like dining out, entertainment, and hobbies.'}
+          <p class="text-xs text-muted mt-2 leading-relaxed">
+            {type === 'need' 
+              ? 'Fixed essentials like housing, groceries, utilities, and transport.' 
+              : 'Discretionary spending like dining out, entertainment, and hobbies.'}
           </p>
         </div>
 
-        <!-- 2. Item Name -->
-        <div class="space-y-1.5">
-          <label for="item-name" class="block text-xs font-semibold text-secondary">Name</label>
-          <input
-            id="item-name"
-            type="text"
-            bind:value={name}
-            required
-            placeholder="e.g. Rent, Groceries, Netflix"
-            class="raster-input w-full text-sm"
-            style="min-height: 42px;"
-          />
-        </div>
-
-        <!-- 3. Cost & Currency -->
-        <div class="space-y-1.5">
-          <label for="item-amount" class="block text-xs font-semibold text-secondary">Amount ({currency})</label>
-          <div class="relative flex items-center">
-            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-muted pointer-events-none select-none text-sm">
-              {currency}
-            </span>
+        <!-- 2 & 3. Name & Amount (Side-by-side on tablet/desktop) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- Name -->
+          <div class="sm:col-span-2 space-y-1.5">
+            <label for="item-name" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
+              Name *
+            </label>
             <input
-              id="item-amount"
-              type="number"
-              step="any"
-              min="0.01"
-              bind:value={amount}
+              id="item-name"
+              type="text"
+              bind:value={name}
               required
-              placeholder="0.00"
-              class="raster-input w-full text-base font-bold"
-              style="padding-left: 2.25rem !important; min-height: 42px;"
+              placeholder="e.g. Rent, Groceries, Netflix"
+              class="raster-input w-full text-sm font-medium"
+              style="min-height: 44px;"
             />
+          </div>
+
+          <!-- Amount -->
+          <div class="space-y-1.5">
+            <label for="item-amount" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
+              Amount ({currency}) *
+            </label>
+            <div class="relative flex items-center">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-muted pointer-events-none select-none text-sm">
+                {currency}
+              </span>
+              <input
+                id="item-amount"
+                type="number"
+                step="any"
+                min="0.01"
+                bind:value={amount}
+                required
+                placeholder="0.00"
+                class="raster-input w-full text-base font-bold"
+                style="padding-left: 2.25rem !important; min-height: 44px;"
+              />
+            </div>
           </div>
         </div>
 
-        <!-- 4. Recurrence Frequency -->
-        <div class="space-y-1.5">
-          <div class="block text-xs font-semibold text-secondary">Frequency</div>
-          <div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-            {#each frequencies as freq}
+        <!-- 4. Recurrence Frequency (Balanced 4-column layout) -->
+        <div>
+          <div class="block text-xs font-semibold uppercase tracking-wider text-secondary mb-2">
+            Frequency
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <!-- Row 1: Common recurring cadences -->
+            {#each recurringFrequencies as freq}
               <button
                 type="button"
                 onclick={() => (frequency = freq)}
-                class="raster-btn {frequency === freq ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm"
-                style="font-size: 11px; font-weight: 500; min-height: 36px;"
+                class="raster-btn py-2.5 {frequency === freq ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm"
+                style="font-size: 11px; font-weight: 600; min-height: 38px;"
               >
                 {FREQUENCY_LABELS[freq]}
+              </button>
+            {/each}
+
+            <!-- Row 2: Longer & One-time cadences -->
+            {#each secondaryFrequencies as item}
+              <button
+                type="button"
+                onclick={() => (frequency = item.freq)}
+                class="raster-btn py-2.5 {item.span} {frequency === item.freq ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm"
+                style="font-size: 11px; font-weight: 600; min-height: 38px;"
+              >
+                {FREQUENCY_LABELS[item.freq]}
               </button>
             {/each}
           </div>
@@ -205,13 +238,15 @@
 
         <!-- If frequency is once: Date input -->
         {#if frequency === 'once'}
-          <div class="space-y-1.5">
-            <label for="item-date" class="block text-xs font-semibold text-secondary">Date</label>
+          <div class="space-y-1.5 p-3.5 border border-border-subtle bg-surface-subtle">
+            <label for="item-date" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
+              Transaction Date
+            </label>
             <input
               id="item-date"
               type="date"
               bind:value={date}
-              class="raster-input w-full text-xs"
+              class="raster-input w-full text-sm"
               style="min-height: 42px;"
             />
           </div>
@@ -219,12 +254,14 @@
 
         <!-- 5. Category Selection -->
         <div class="space-y-1.5">
-          <label for="item-category" class="block text-xs font-semibold text-secondary">Category</label>
+          <label for="item-category" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
+            Category
+          </label>
           <select
             id="item-category"
             bind:value={category}
             class="raster-select w-full text-sm"
-            style="min-height: 42px;"
+            style="min-height: 44px;"
           >
             {#each PRESET_CATEGORIES as cat}
               <option value={cat.id}>{cat.name}</option>
@@ -233,8 +270,10 @@
         </div>
 
         <!-- 6. Tags -->
-        <div class="space-y-1.5">
-          <label for="item-tags" class="block text-xs font-semibold text-secondary">Tags (Optional)</label>
+        <div class="space-y-2">
+          <label for="item-tags" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
+            Tags (Optional)
+          </label>
           <div class="flex gap-2">
             <input
               id="item-tags"
@@ -246,28 +285,29 @@
                   addTag()
                 }
               }}
-              placeholder="Type tag and press Add"
+              placeholder="e.g. fixed, subscription, essentials"
               class="raster-input flex-1 text-xs"
-              style="min-height: 40px;"
+              style="min-height: 42px;"
             />
             <button
               type="button"
               onclick={addTag}
-              class="raster-btn raster-btn-outline raster-btn-sm px-3"
+              class="raster-btn raster-btn-outline px-4 shrink-0"
+              style="min-height: 42px; font-size: 12px; font-weight: 600;"
             >
               Add Tag
             </button>
           </div>
 
           {#if tags.length > 0}
-            <div class="flex flex-wrap gap-1.5 mt-2">
+            <div class="flex flex-wrap gap-2 pt-1 pb-1">
               {#each tags as t}
-                <span class="inline-flex items-center gap-1 text-xs bg-surface-subtle border border-border px-2 py-0.5">
+                <span class="inline-flex items-center gap-1.5 text-xs bg-surface-subtle border border-border px-2.5 py-1">
                   #{t}
                   <button
                     type="button"
                     onclick={() => removeTag(t)}
-                    class="text-muted hover:text-primary text-xs ml-1"
+                    class="text-muted hover:text-primary text-xs ml-0.5 p-0.5"
                     aria-label={`Remove tag ${t}`}
                   >
                     ✕
@@ -280,29 +320,33 @@
 
         <!-- 7. Notes -->
         <div class="space-y-1.5">
-          <label for="item-notes" class="block text-xs font-semibold text-secondary">Notes (Optional)</label>
+          <label for="item-notes" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
+            Notes (Optional)
+          </label>
           <textarea
             id="item-notes"
             bind:value={notes}
-            placeholder="Add any extra details or renewal reminders..."
-            class="raster-textarea w-full text-xs"
-            rows="2"
+            placeholder="Add any extra details, renewal reminders, or payment notes..."
+            class="raster-textarea w-full text-sm"
+            rows="3"
+            style="min-height: 72px;"
           ></textarea>
         </div>
 
-        <!-- Modal Actions -->
-        <div class="flex items-center justify-end gap-2 pt-4 border-top">
+        <!-- Modal Actions Footer -->
+        <div class="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-border">
           <button
             type="button"
             onclick={onClose}
-            class="raster-btn raster-btn-ghost raster-btn-sm"
+            class="raster-btn raster-btn-ghost"
+            style="padding: 10px 18px; font-size: 13px;"
           >
             Cancel
           </button>
           <button
             type="submit"
             class="raster-btn raster-btn-primary"
-            style="min-width: 120px;"
+            style="min-width: 140px; padding: 10px 22px; font-size: 13px; font-weight: 600;"
           >
             {editingItem ? 'Save Changes' : 'Add Expense'}
           </button>

@@ -116,12 +116,13 @@
       tabindex="-1"
     >
       <!-- Header -->
-      <div class="flex justify-between items-center pb-3 border-bottom mb-4">
-        <h3 class="text-base font-bold text-primary">Settings</h3>
+      <div class="flex justify-between items-center pb-4 mb-6 border-b border-border">
+        <h3 class="text-lg font-bold tracking-tight text-primary">Settings</h3>
         <button
           type="button"
           onclick={onClose}
           class="raster-btn raster-btn-ghost raster-btn-sm"
+          style="padding: 6px 8px;"
           aria-label="Close Settings modal"
         >
           <X class="w-4 h-4 text-muted hover:text-primary" />
@@ -129,7 +130,7 @@
       </div>
 
       {#if statusMessage}
-        <div class="p-3 mb-4 border border-border flex items-center gap-2 text-xs {statusMessage.type === 'success' ? 'bg-surface-subtle text-primary' : 'text-accent border-accent'}">
+        <div class="p-3.5 mb-5 border border-border flex items-center gap-2.5 text-xs {statusMessage.type === 'success' ? 'bg-surface-subtle text-primary' : 'text-accent border-accent'}">
           {#if statusMessage.type === 'success'}
             <CheckCircle class="w-4 h-4 text-emerald-600 shrink-0" />
           {:else}
@@ -139,31 +140,31 @@
         </div>
       {/if}
 
-      <div class="space-y-5">
+      <div class="space-y-6">
         <!-- 1. Income Benchmark -->
-        <div class="p-4 border border-border space-y-3" style="background-color: var(--raster-surface);">
+        <div class="p-5 border border-border space-y-4" style="background-color: var(--raster-surface);">
           <div class="flex justify-between items-center">
             <div>
               <div class="font-bold text-sm text-primary">Income Benchmark</div>
-              <p class="text-xs text-muted">Used for 50/30/20 ratios and work-hour calculations</p>
+              <p class="text-xs text-muted mt-0.5">Used for 50/30/20 ratios and work-hour calculations</p>
             </div>
             <button
               type="button"
               onclick={() => (incomeEnabled = !incomeEnabled)}
-              class="raster-btn {incomeEnabled ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm text-xs"
+              class="raster-btn {incomeEnabled ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm text-xs px-3 py-1.5"
             >
               <span>{incomeEnabled ? 'Enabled' : 'Disabled'}</span>
             </button>
           </div>
 
           {#if incomeEnabled}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div class="space-y-1">
-                <label for="income-amount" class="block text-xs font-semibold text-secondary">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div class="space-y-1.5">
+                <label for="income-amount" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
                   Take-Home Income ({currency})
                 </label>
                 <div class="relative flex items-center">
-                  <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-muted pointer-events-none text-xs">
+                  <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-muted pointer-events-none text-xs">
                     {currency}
                   </span>
                   <input
@@ -172,18 +173,20 @@
                     bind:value={incomeAmount}
                     placeholder="4500"
                     class="raster-input w-full font-bold text-sm"
-                    style="padding-left: 2rem !important; min-height: 40px;"
+                    style="padding-left: 2.25rem !important; min-height: 42px;"
                   />
                 </div>
               </div>
 
-              <div class="space-y-1">
-                <label for="income-freq" class="block text-xs font-semibold text-secondary">Income Frequency</label>
+              <div class="space-y-1.5">
+                <label for="income-freq" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
+                  Income Frequency
+                </label>
                 <select
                   id="income-freq"
                   bind:value={incomeFrequency}
                   class="raster-select w-full text-xs"
-                  style="min-height: 40px;"
+                  style="min-height: 42px; padding: 10px 12px;"
                 >
                   <option value="monthly">Monthly</option>
                   <option value="yearly">Yearly</option>
@@ -191,8 +194,8 @@
                 </select>
               </div>
 
-              <div class="col-span-1 sm:col-span-2 space-y-1">
-                <label for="hours-week" class="block text-xs font-semibold text-secondary">
+              <div class="col-span-1 sm:col-span-2 space-y-1.5">
+                <label for="hours-week" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
                   Weekly Work Hours (for Hourly Normalizer)
                 </label>
                 <input
@@ -201,7 +204,7 @@
                   bind:value={hoursPerWeek}
                   placeholder="40"
                   class="raster-input w-full text-xs"
-                  style="min-height: 40px;"
+                  style="min-height: 42px;"
                 />
               </div>
             </div>
@@ -209,13 +212,15 @@
         </div>
 
         <!-- 2. Currency Selection -->
-        <div class="space-y-1.5">
-          <label for="curr-select" class="block text-xs font-semibold text-secondary">Base Currency</label>
+        <div class="space-y-2">
+          <label for="curr-select" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
+            Base Currency
+          </label>
           <select
             id="curr-select"
             bind:value={currency}
-            class="raster-select w-full text-xs"
-            style="min-height: 40px;"
+            class="raster-select w-full text-sm"
+            style="min-height: 44px;"
           >
             {#each currencies as c}
               <option value={c.symbol}>{c.name}</option>
@@ -224,10 +229,10 @@
         </div>
 
         <!-- 3. Data Management & Backup -->
-        <div class="p-4 border border-border space-y-3" style="background-color: var(--raster-surface);">
+        <div class="p-5 border border-border space-y-4" style="background-color: var(--raster-surface);">
           <div>
             <div class="font-bold text-sm text-primary">Data & Backup</div>
-            <p class="text-xs text-muted">Your data is stored locally in your browser (IndexedDB).</p>
+            <p class="text-xs text-muted mt-0.5">Your data is stored locally in your browser (IndexedDB).</p>
           </div>
 
           <!-- Hidden File Inputs -->
@@ -247,50 +252,50 @@
           />
 
           <!-- Export/Import Buttons -->
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-2 gap-3">
             <button
               type="button"
               onclick={() => exportToJSON(settings)}
-              class="raster-btn raster-btn-outline raster-btn-sm"
+              class="raster-btn raster-btn-outline raster-btn-sm py-2.5"
               title="Download full JSON backup"
             >
-              <Download class="w-3.5 h-3.5 mr-1" />
+              <Download class="w-3.5 h-3.5 mr-1.5" />
               <span>Export JSON</span>
             </button>
 
             <button
               type="button"
               onclick={() => jsonFileInput?.click()}
-              class="raster-btn raster-btn-outline raster-btn-sm"
+              class="raster-btn raster-btn-outline raster-btn-sm py-2.5"
               title="Restore from JSON backup"
             >
-              <Upload class="w-3.5 h-3.5 mr-1" />
+              <Upload class="w-3.5 h-3.5 mr-1.5" />
               <span>Import JSON</span>
             </button>
 
             <button
               type="button"
               onclick={() => exportToCSV()}
-              class="raster-btn raster-btn-outline raster-btn-sm"
+              class="raster-btn raster-btn-outline raster-btn-sm py-2.5"
               title="Export as CSV spreadsheet"
             >
-              <Download class="w-3.5 h-3.5 mr-1" />
+              <Download class="w-3.5 h-3.5 mr-1.5" />
               <span>Export CSV</span>
             </button>
 
             <button
               type="button"
               onclick={() => csvFileInput?.click()}
-              class="raster-btn raster-btn-outline raster-btn-sm"
+              class="raster-btn raster-btn-outline raster-btn-sm py-2.5"
               title="Import items from CSV"
             >
-              <Upload class="w-3.5 h-3.5 mr-1" />
+              <Upload class="w-3.5 h-3.5 mr-1.5" />
               <span>Import CSV</span>
             </button>
           </div>
 
           <!-- Sample Data & Reset -->
-          <div class="pt-3 border-top flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+          <div class="pt-4 border-t border-border flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
             <button
               type="button"
               onclick={async () => {
@@ -300,8 +305,9 @@
                 }
               }}
               class="raster-btn raster-btn-ghost raster-btn-sm"
+              style="padding: 6px 12px;"
             >
-              <RefreshCw class="w-3.5 h-3.5 mr-1" />
+              <RefreshCw class="w-3.5 h-3.5 mr-1.5" />
               <span>Load Sample Data</span>
             </button>
 
@@ -314,19 +320,21 @@
                 }
               }}
               class="raster-btn raster-btn-ghost raster-btn-sm text-accent hover:text-red-700"
+              style="padding: 6px 12px;"
             >
-              <Trash2 class="w-3.5 h-3.5 mr-1" />
+              <Trash2 class="w-3.5 h-3.5 mr-1.5" />
               <span>Clear All Data</span>
             </button>
           </div>
         </div>
 
         <!-- Footer Actions -->
-        <div class="flex items-center justify-end gap-2 pt-3 border-top">
+        <div class="flex items-center justify-end gap-3 pt-6 mt-6 border-t border-border">
           <button
             type="button"
             onclick={onClose}
-            class="raster-btn raster-btn-ghost raster-btn-sm"
+            class="raster-btn raster-btn-ghost"
+            style="padding: 10px 18px; font-size: 13px;"
           >
             Cancel
           </button>
@@ -334,7 +342,7 @@
             type="button"
             onclick={handleSave}
             class="raster-btn raster-btn-primary"
-            style="min-width: 120px;"
+            style="min-width: 140px; padding: 10px 22px; font-size: 13px; font-weight: 600;"
           >
             Save Settings
           </button>
