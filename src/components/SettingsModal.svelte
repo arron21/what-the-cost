@@ -140,25 +140,25 @@
         </div>
       {/if}
 
-      <div class="space-y-6">
-        <!-- 1. Income Benchmark -->
-        <div class="p-5 border border-border space-y-4" style="background-color: var(--raster-surface);">
+      <div class="space-y-6 sm:space-y-7">
+        <!-- 1. Income Benchmark Card with generous internal padding -->
+        <div class="settings-card space-y-5">
           <div class="flex justify-between items-center">
             <div>
-              <div class="font-bold text-sm text-primary">Income Benchmark</div>
+              <div class="font-bold text-sm sm:text-base text-primary">Income Benchmark</div>
               <p class="text-xs text-muted mt-0.5">Used for 50/30/20 ratios and work-hour calculations</p>
             </div>
             <button
               type="button"
               onclick={() => (incomeEnabled = !incomeEnabled)}
-              class="raster-btn {incomeEnabled ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm text-xs px-3 py-1.5"
+              class="raster-btn {incomeEnabled ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm text-xs px-3.5 py-1.5"
             >
               <span>{incomeEnabled ? 'Enabled' : 'Disabled'}</span>
             </button>
           </div>
 
           {#if incomeEnabled}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               <div class="space-y-1.5">
                 <label for="income-amount" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
                   Take-Home Income ({currency})
@@ -212,7 +212,7 @@
         </div>
 
         <!-- 2. Currency Selection -->
-        <div class="space-y-2">
+        <div class="space-y-2 py-1">
           <label for="curr-select" class="block text-xs font-semibold uppercase tracking-wider text-secondary">
             Base Currency
           </label>
@@ -228,10 +228,10 @@
           </select>
         </div>
 
-        <!-- 3. Data Management & Backup -->
-        <div class="p-5 border border-border space-y-4" style="background-color: var(--raster-surface);">
+        <!-- 3. Data Management & Backup Card with generous internal padding -->
+        <div class="settings-card space-y-5">
           <div>
-            <div class="font-bold text-sm text-primary">Data & Backup</div>
+            <div class="font-bold text-sm sm:text-base text-primary">Data & Backup</div>
             <p class="text-xs text-muted mt-0.5">Your data is stored locally in your browser (IndexedDB).</p>
           </div>
 
@@ -252,11 +252,11 @@
           />
 
           <!-- Export/Import Buttons -->
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 gap-3.5 pt-1">
             <button
               type="button"
               onclick={() => exportToJSON(settings)}
-              class="raster-btn raster-btn-outline raster-btn-sm py-2.5"
+              class="raster-btn raster-btn-outline raster-btn-sm py-2.5 px-3"
               title="Download full JSON backup"
             >
               <Download class="w-3.5 h-3.5 mr-1.5" />
@@ -266,7 +266,7 @@
             <button
               type="button"
               onclick={() => jsonFileInput?.click()}
-              class="raster-btn raster-btn-outline raster-btn-sm py-2.5"
+              class="raster-btn raster-btn-outline raster-btn-sm py-2.5 px-3"
               title="Restore from JSON backup"
             >
               <Upload class="w-3.5 h-3.5 mr-1.5" />
@@ -276,7 +276,7 @@
             <button
               type="button"
               onclick={() => exportToCSV()}
-              class="raster-btn raster-btn-outline raster-btn-sm py-2.5"
+              class="raster-btn raster-btn-outline raster-btn-sm py-2.5 px-3"
               title="Export as CSV spreadsheet"
             >
               <Download class="w-3.5 h-3.5 mr-1.5" />
@@ -286,7 +286,7 @@
             <button
               type="button"
               onclick={() => csvFileInput?.click()}
-              class="raster-btn raster-btn-outline raster-btn-sm py-2.5"
+              class="raster-btn raster-btn-outline raster-btn-sm py-2.5 px-3"
               title="Import items from CSV"
             >
               <Upload class="w-3.5 h-3.5 mr-1.5" />
@@ -294,8 +294,8 @@
             </button>
           </div>
 
-          <!-- Sample Data & Reset -->
-          <div class="pt-4 border-t border-border flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+          <!-- Sample Data & Reset with subtle separator -->
+          <div class="pt-4 mt-2 border-t border-border-subtle flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
             <button
               type="button"
               onclick={async () => {
@@ -305,7 +305,7 @@
                 }
               }}
               class="raster-btn raster-btn-ghost raster-btn-sm"
-              style="padding: 6px 12px;"
+              style="padding: 6px 14px;"
             >
               <RefreshCw class="w-3.5 h-3.5 mr-1.5" />
               <span>Load Sample Data</span>
@@ -320,7 +320,7 @@
                 }
               }}
               class="raster-btn raster-btn-ghost raster-btn-sm text-accent hover:text-red-700"
-              style="padding: 6px 12px;"
+              style="padding: 6px 14px;"
             >
               <Trash2 class="w-3.5 h-3.5 mr-1.5" />
               <span>Clear All Data</span>

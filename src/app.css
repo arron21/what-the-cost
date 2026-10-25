@@ -163,6 +163,21 @@
   }
 }
 
+/* Settings Modal Cards with guaranteed generous padding */
+.settings-card {
+  background-color: var(--raster-surface);
+  border: 1px solid var(--raster-border);
+  border-radius: var(--raster-radius);
+  padding: 1.5rem !important; /* 24px padding all around */
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .settings-card {
+    padding: 1.75rem 2rem !important; /* 28px vertical, 32px horizontal */
+  }
+}
+
 /* Mobile FAB Floating Button (strictly hidden on desktop/tablet >= 640px) */
 .mobile-fab-btn {
   display: none !important;
