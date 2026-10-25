@@ -60,18 +60,18 @@
   )
 </script>
 
-<div class="raster-split-asymmetric gap-4 sm:gap-6">
+<div class="raster-split-asymmetric gap-5 sm:gap-6">
   <!-- Left: Category Breakdown Table -->
-  <div class="raster-card p-4 sm:p-5">
-    <div class="flex items-center justify-between pb-3 mb-2 border-bottom">
+  <div class="raster-card p-5 sm:p-6">
+    <div class="flex items-center justify-between pb-3.5 mb-3 border-b border-border">
       <div>
-        <h3 class="font-bold text-sm text-primary">Category Breakdown</h3>
-        <span class="text-xs text-muted">{categoryTotals().length} categories</span>
+        <h3 class="font-bold text-sm sm:text-base text-primary">Category Breakdown</h3>
+        <span class="text-xs text-muted mt-0.5">{categoryTotals().length} categories</span>
       </div>
     </div>
 
     {#if categoryTotals().length === 0}
-      <div class="py-12 text-center text-xs text-muted">
+      <div class="py-14 text-center text-xs text-muted">
         No expenses recorded yet.
       </div>
     {:else}
@@ -79,10 +79,10 @@
         <table class="raster-table w-full">
           <thead>
             <tr>
-              <th class="text-left font-medium text-xs text-muted py-2">Category</th>
-              <th class="text-left font-medium text-xs text-muted py-2">Type</th>
-              <th class="text-left font-medium text-xs text-muted py-2 hidden sm:table-cell">Share</th>
-              <th class="cell-num font-medium text-xs text-muted py-2">Total</th>
+              <th class="text-left font-medium text-xs text-muted py-2.5">Category</th>
+              <th class="text-left font-medium text-xs text-muted py-2.5">Type</th>
+              <th class="text-left font-medium text-xs text-muted py-2.5 hidden sm:table-cell">Share</th>
+              <th class="cell-num font-medium text-xs text-muted py-2.5">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -95,28 +95,28 @@
                 onclick={() => onSelectCategoryFilter && onSelectCategoryFilter(cat.id)}
                 title="Filter ledger by this category"
               >
-                <td class="py-2.5">
-                  <span class="font-medium text-xs text-primary hover:underline">{cat.name}</span>
-                  <span class="text-[11px] text-muted ml-1">({cat.count})</span>
+                <td class="py-3">
+                  <span class="font-medium text-xs sm:text-sm text-primary hover:underline">{cat.name}</span>
+                  <span class="text-[11px] text-muted ml-1.5">({cat.count})</span>
                 </td>
-                <td class="py-2.5">
+                <td class="py-3">
                   {#if cat.needsAmount > 0 && cat.wantsAmount > 0}
-                    <span class="raster-tag text-[10px] py-0.5 px-1.5">Mixed</span>
+                    <span class="raster-tag text-[10px] py-0.5 px-2">Mixed</span>
                   {:else if cat.needsAmount > 0}
-                    <span class="raster-tag raster-tag-solid text-[10px] py-0.5 px-1.5">Need</span>
+                    <span class="raster-tag raster-tag-solid text-[10px] py-0.5 px-2">Need</span>
                   {:else}
-                    <span class="raster-tag text-[10px] py-0.5 px-1.5" style="color: var(--raster-accent); border-color: currentColor;">Want</span>
+                    <span class="raster-tag text-[10px] py-0.5 px-2" style="color: var(--raster-accent); border-color: currentColor;">Want</span>
                   {/if}
                 </td>
-                <td class="py-2.5 hidden sm:table-cell">
-                  <div class="raster-meter-track" style="height: 4px; width: 64px;">
+                <td class="py-3 hidden sm:table-cell">
+                  <div class="raster-meter-track" style="height: 4px; width: 68px;">
                     <div 
                       class="raster-meter-fill {isNeedDominant ? '' : 'raster-meter-fill-accent'}" 
                       style="width: {sharePct}%;"
                     ></div>
                   </div>
                 </td>
-                <td class="cell-num py-2.5 font-semibold text-xs text-primary">
+                <td class="cell-num py-3 font-semibold text-xs sm:text-sm text-primary">
                   {formatCurrency(cat.amount, currency)}
                 </td>
               </tr>
@@ -126,7 +126,7 @@
       </div>
 
       {#if categoryTotals().length > 6}
-        <div class="pt-3 mt-2 border-top flex justify-between items-center text-xs text-muted">
+        <div class="pt-4 mt-3 border-t border-border-subtle flex justify-between items-center text-xs text-muted">
           <span>Top 6 of {categoryTotals().length} categories</span>
           <span class="text-[11px]">Filtered in ledger below</span>
         </div>
@@ -135,16 +135,16 @@
   </div>
 
   <!-- Right: Savings Rate & Quick Summary -->
-  <div class="raster-card p-4 sm:p-5 flex flex-col justify-between">
+  <div class="raster-card p-5 sm:p-6 flex flex-col justify-between">
     <div>
       <span class="text-xs font-semibold uppercase tracking-wider text-secondary">Savings & Surplus Rate</span>
 
       <!-- Monolithic Display Figure -->
-      <div class="py-4 my-3 border-top border-bottom">
+      <div class="py-5 my-4 border-t border-b border-border">
         <div class="text-3xl sm:text-4xl font-bold tracking-tight text-primary">
           {hasIncome ? `${stats.savingsPercentOfIncome}%` : `${stats.needsPercentOfTotal}%`}
         </div>
-        <div class="text-xs text-secondary mt-1">
+        <div class="text-xs text-secondary mt-1.5">
           {#if hasIncome}
             {formatCurrency(stats.activeNetSurplus, currency)} retained after commitments
           {:else}
@@ -153,22 +153,22 @@
         </div>
       </div>
 
-      <!-- Quick Metrics -->
-      <div class="space-y-2 text-xs">
-        <div class="flex justify-between py-1 border-bottom">
-          <span class="text-muted">Total Outflow:</span>
-          <span class="font-medium text-primary">{formatCurrency(whatIfActive ? stats.activeTotalOutflow : stats.totalOutflow, currency)}</span>
+      <!-- Quick Metrics with Generous Whitespace -->
+      <div class="space-y-2 mt-5 text-sm">
+        <div class="flex justify-between items-center py-2.5 border-b border-border-subtle">
+          <span class="text-muted text-xs sm:text-sm">Total Outflow:</span>
+          <span class="font-semibold text-primary">{formatCurrency(whatIfActive ? stats.activeTotalOutflow : stats.totalOutflow, currency)}</span>
         </div>
-        <div class="flex justify-between py-1 border-bottom">
-          <span class="text-muted">Discretionary:</span>
-          <span class="font-medium text-primary">{stats.wantsPercentOfTotal}% of total</span>
+        <div class="flex justify-between items-center py-2.5 border-b border-border-subtle">
+          <span class="text-muted text-xs sm:text-sm">Discretionary:</span>
+          <span class="font-semibold text-primary">{stats.wantsPercentOfTotal}% of total</span>
         </div>
       </div>
     </div>
 
     <!-- Notice if top category exists -->
     {#if topCategory}
-      <div class="mt-4 pt-3 border-top text-xs text-secondary">
+      <div class="mt-6 pt-4 border-t border-border-subtle text-xs text-secondary leading-relaxed">
         <strong>{topCategory.name}</strong> represents <strong>{topCategoryShare}%</strong> of total expenditures.
       </div>
     {/if}

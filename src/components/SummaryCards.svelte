@@ -20,17 +20,17 @@
   }
 </script>
 
-<div class="space-y-4 sm:space-y-6">
+<div class="space-y-5 sm:space-y-6">
   <!-- Metric KPI Cards: 4 columns on desktop, clean 2x2 on mobile -->
   <div class="raster-grid">
     <!-- 01. Total Outflow -->
     <div class="col-3 col-lg-6 col-sm-6 col-xs-12">
-      <div class="raster-card p-4 sm:p-5">
+      <div class="raster-card p-5 sm:p-6">
         <div class="raster-stat">
           <div class="raster-stat-label">
             <span>{horizonLabels[horizon]} Outflow</span>
           </div>
-          <div class="raster-stat-value text-2xl sm:text-3xl font-bold tracking-tight">
+          <div class="raster-stat-value text-2xl sm:text-3xl font-bold tracking-tight mt-1 mb-1.5">
             {formatCurrency(whatIfActive ? stats.activeTotalOutflow : stats.totalOutflow, currency)}
           </div>
           <div class="raster-stat-sub text-xs text-muted">
@@ -49,13 +49,13 @@
 
     <!-- 02. Needs -->
     <div class="col-3 col-lg-6 col-sm-6 col-xs-12">
-      <div class="raster-card p-4 sm:p-5">
+      <div class="raster-card p-5 sm:p-6">
         <div class="raster-stat">
           <div class="raster-stat-label flex items-center justify-between">
             <span>Needs</span>
             <span class="text-[10px] text-muted font-normal">Target ~50%</span>
           </div>
-          <div class="raster-stat-value text-2xl sm:text-3xl font-bold tracking-tight">
+          <div class="raster-stat-value text-2xl sm:text-3xl font-bold tracking-tight mt-1 mb-1.5">
             {formatCurrency(stats.needsTotal, currency)}
           </div>
           <div class="raster-stat-sub text-xs">
@@ -69,13 +69,13 @@
 
     <!-- 03. Wants -->
     <div class="col-3 col-lg-6 col-sm-6 col-xs-12">
-      <div class="raster-card p-4 sm:p-5">
+      <div class="raster-card p-5 sm:p-6">
         <div class="raster-stat">
           <div class="raster-stat-label flex items-center justify-between">
             <span>Wants</span>
             <span class="text-[10px] text-muted font-normal">Target ~30%</span>
           </div>
-          <div class="raster-stat-value text-2xl sm:text-3xl font-bold tracking-tight" style={whatIfActive && stats.cutWantsCount > 0 ? 'color: var(--raster-accent);' : ''}>
+          <div class="raster-stat-value text-2xl sm:text-3xl font-bold tracking-tight mt-1 mb-1.5" style={whatIfActive && stats.cutWantsCount > 0 ? 'color: var(--raster-accent);' : ''}>
             {formatCurrency(whatIfActive ? stats.activeWantsTotal : stats.wantsTotal, currency)}
           </div>
           <div class="raster-stat-sub text-xs">
@@ -89,13 +89,13 @@
 
     <!-- 04. Savings & Surplus -->
     <div class="col-3 col-lg-6 col-sm-6 col-xs-12">
-      <div class="raster-card p-4 sm:p-5">
+      <div class="raster-card p-5 sm:p-6">
         <div class="raster-stat">
           <div class="raster-stat-label flex items-center justify-between">
             <span>Savings / Surplus</span>
             <span class="text-[10px] text-muted font-normal">Target ~20%</span>
           </div>
-          <div class="raster-stat-value text-2xl sm:text-3xl font-bold tracking-tight" style={hasIncome && stats.activeNetSurplus < 0 ? 'color: var(--raster-accent);' : ''}>
+          <div class="raster-stat-value text-2xl sm:text-3xl font-bold tracking-tight mt-1 mb-1.5" style={hasIncome && stats.activeNetSurplus < 0 ? 'color: var(--raster-accent);' : ''}>
             {hasIncome ? formatCurrency(stats.activeNetSurplus, currency) : '—'}
           </div>
           <div class="raster-stat-sub text-xs">
@@ -114,27 +114,27 @@
 
   <!-- 50/30/20 Budget Health Metric Card -->
   {#if hasIncome}
-    <div class="raster-card p-4 sm:p-5">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+    <div class="raster-card p-5 sm:p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
         <span class="text-xs font-semibold uppercase tracking-wider text-secondary">50 / 30 / 20 Budget Target</span>
-        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-secondary">
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-secondary">
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--raster-fg-primary);"></span>
+            <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: var(--raster-fg-primary);"></span>
             Needs: <strong>{stats.needsPercentOfIncome}%</strong>
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--raster-accent);"></span>
+            <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: var(--raster-accent);"></span>
             Wants: <strong>{stats.wantsPercentOfIncome}%</strong>
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full inline-block" style="background-color: var(--raster-signal-emerald);"></span>
+            <span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: var(--raster-signal-emerald);"></span>
             Savings: <strong>{stats.savingsPercentOfIncome}%</strong>
           </span>
         </div>
       </div>
 
       <!-- Segmented Multi-Bar -->
-      <div class="raster-segmented-bar" style="height: 8px;">
+      <div class="raster-segmented-bar" style="height: 10px;">
         <div 
           style="width: {Math.min(100, stats.needsPercentOfIncome)}%; background-color: var(--raster-fg-primary);" 
           title={`Needs: ${stats.needsPercentOfIncome}% of income (target: ~50%)`}
@@ -149,7 +149,7 @@
         ></div>
       </div>
 
-      <div class="flex justify-between mt-2 text-[10px] text-muted">
+      <div class="flex justify-between mt-2.5 text-[11px] text-muted">
         <span>Target: 50% Needs</span>
         <span>Target: 30% Wants</span>
         <span>Target: 20% Savings</span>
