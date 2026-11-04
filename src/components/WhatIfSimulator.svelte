@@ -38,23 +38,20 @@
 </script>
 
 {#if whatIfActive}
-  <div 
-    class="raster-card p-4 sm:p-5" 
-    style="border-left: 3px solid var(--raster-accent); background-color: var(--raster-surface);"
-  >
+  <div class="raster-card-subtle" style="border-left: 2px solid var(--raster-fg-primary);">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
       <div>
         <div class="flex items-center gap-2 mb-1">
-          <Sparkles class="w-3.5 h-3.5 text-secondary" style="color: var(--raster-accent);" />
-          <span class="text-xs font-semibold uppercase tracking-wider text-primary">What-If Simulation</span>
+          <Sparkles class="w-3.5 h-3.5 text-primary" />
+          <span class="text-xs font-medium text-primary">What-If simulation</span>
         </div>
-        <p class="text-sm text-secondary">
+        <p class="text-xs text-secondary leading-relaxed">
           {#if stats.cutWantsCount > 0}
-            Cutting <strong>{stats.cutWantsCount}</strong> discretionary item{stats.cutWantsCount > 1 ? 's' : ''} saves
+            Simulating cutting <strong>{stats.cutWantsCount}</strong> discretionary item{stats.cutWantsCount > 1 ? 's' : ''}: saves
             <strong style="color: var(--raster-signal-emerald);">{formatCurrency(stats.simulatedSavings, currency)}</strong>{horizonSuffix[horizon]}
             <span class="text-muted">({formatCurrency(annualSavings, currency)}/yr)</span>
           {:else}
-            Tap "Cut" on any discretionary want in the expenses list below to test how cutting it impacts your budget.
+            Tap "Cut" on any discretionary want in the expenses list below to simulate how cutting it increases your surplus.
           {/if}
         </p>
       </div>
@@ -68,17 +65,17 @@
             title="Restore all cuts"
           >
             <RotateCcw class="w-3 h-3 mr-1" />
-            <span>Reset</span>
+            <span>Reset cuts</span>
           </button>
         {:else}
           <button
             type="button"
             onclick={onCutAllWants}
-            class="raster-btn raster-btn-accent raster-btn-sm flex-1 md:flex-initial"
+            class="raster-btn raster-btn-primary raster-btn-sm flex-1 md:flex-initial"
             title="Simulate cutting all wants"
           >
             <Scissors class="w-3 h-3 mr-1" />
-            <span>Cut All Wants</span>
+            <span>Cut all wants</span>
           </button>
         {/if}
 

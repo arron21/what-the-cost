@@ -32,34 +32,28 @@
   ]
 </script>
 
-<header class="raster-masthead" style="border-bottom: 1px solid var(--raster-border); background-color: var(--raster-surface);">
+<header class="raster-masthead" style="border-bottom: 1px solid var(--raster-border); background-color: var(--raster-canvas);">
   <div class="raster-container">
-    <!-- Top Row: Brand & Quick Controls -->
-    <div class="flex items-center justify-between py-3.5 sm:py-4 gap-3">
+    <!-- Top Row: Brand, Centered Underlined Tabs & Quick Controls -->
+    <div class="flex items-center justify-between py-3 sm:py-3.5 gap-4">
       <!-- Brand -->
-      <div class="flex items-center gap-2.5">
-        <span 
-          style="display: inline-block; width: 8px; height: 8px; background: var(--raster-accent); border-radius: 1px;"
-          aria-hidden="true"
-        ></span>
-        <span style="font-family: var(--raster-font-display); font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--raster-fg-primary);">
-          What The Cost
-        </span>
+      <div class="raster-brand">
+        <span>What The Cost</span>
       </div>
 
-      <!-- Desktop Horizon Switcher (Centered on desktop) -->
-      <div class="hidden sm:inline-flex raster-btn-group">
+      <!-- Desktop Horizon Switcher (Quiet Underlined Tab Strip) -->
+      <nav class="hidden sm:inline-flex raster-btn-group" aria-label="Time Horizon">
         {#each horizons as h}
           <button
             type="button"
             onclick={() => onSelectHorizon(h.id)}
             class="raster-btn {timeHorizon === h.id ? 'is-active' : ''}"
-            style="min-width: 60px; font-size: 12px; font-weight: 500;"
+            style="padding: 4px 6px;"
           >
             {h.label}
           </button>
         {/each}
-      </div>
+      </nav>
 
       <!-- Actions -->
       <div class="flex items-center gap-1.5 sm:gap-2">
@@ -67,12 +61,12 @@
         <button
           type="button"
           onclick={onToggleWhatIf}
-          class="raster-btn {whatIfActive ? 'raster-btn-accent' : 'raster-btn-outline'} raster-btn-sm"
-          title="Toggle What-If Simulator"
-          style="font-size: 11px; font-weight: 600;"
+          class="raster-btn {whatIfActive ? 'raster-btn-primary' : 'raster-btn-outline'} raster-btn-sm"
+          title="Toggle What-If sandbox simulation"
+          style="font-size: 11px;"
         >
           <Sparkles class="w-3 h-3 mr-1" />
-          <span>{whatIfActive ? 'What-If On' : 'What-If'}</span>
+          <span>{whatIfActive ? 'What-If on' : 'What-If'}</span>
         </button>
 
         <!-- Theme Toggle -->
@@ -80,14 +74,14 @@
           type="button"
           onclick={onToggleTheme}
           class="raster-btn raster-btn-ghost raster-btn-sm"
-          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           aria-label="Toggle Theme"
           style="padding: 6px 8px;"
         >
           {#if theme === 'dark'}
-            <Sun class="w-4 h-4 text-secondary" />
+            <Sun class="w-3.5 h-3.5" />
           {:else}
-            <Moon class="w-4 h-4 text-secondary" />
+            <Moon class="w-3.5 h-3.5" />
           {/if}
         </button>
 
@@ -100,7 +94,7 @@
           aria-label="Settings"
           style="padding: 6px 8px;"
         >
-          <Settings class="w-4 h-4 text-secondary" />
+          <Settings class="w-3.5 h-3.5" />
         </button>
 
         <!-- Add Allocation Button (Desktop only, mobile has FAB) -->
@@ -108,23 +102,22 @@
           type="button"
           onclick={onOpenAddModal}
           class="raster-btn raster-btn-primary raster-btn-sm hidden sm:inline-flex"
-          style="font-size: 12px; font-weight: 600;"
         >
           <Plus class="w-3.5 h-3.5 mr-1" />
-          <span>Add</span>
+          <span>Add expense</span>
         </button>
       </div>
     </div>
 
     <!-- Mobile Horizon Switcher (Full-width row on mobile <= 640px) -->
-    <div class="sm:hidden pb-3 pt-1">
-      <div class="raster-btn-group raster-btn-group-responsive w-full">
+    <div class="sm:hidden pb-2.5 pt-0.5 border-t border-border-subtle flex justify-around">
+      <div class="raster-btn-group w-full flex justify-between px-2">
         {#each horizons as h}
           <button
             type="button"
             onclick={() => onSelectHorizon(h.id)}
             class="raster-btn {timeHorizon === h.id ? 'is-active' : ''}"
-            style="font-size: 12px; font-weight: 500; min-height: 38px;"
+            style="flex: 1; text-align: center; padding: 6px 0;"
           >
             {h.label}
           </button>

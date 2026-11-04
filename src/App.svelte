@@ -161,7 +161,7 @@
 
   <main class="flex-1 raster-container py-5 sm:py-8">
     {#if !isLoaded}
-      <div class="flex items-center justify-center py-28 text-muted text-sm">
+      <div class="flex items-center justify-center py-28 text-muted text-xs">
         Loading...
       </div>
     {:else}
@@ -191,7 +191,7 @@
         </section>
       {/if}
 
-      <!-- 02. Category Allocation & Savings Rate -->
+      <!-- 02. Category Allocation & Capital Retention -->
       <section class="raster-section">
         <AnalyticsView
           {items}
@@ -204,7 +204,7 @@
         />
       </section>
 
-      <!-- 03. Financial Ledger -->
+      <!-- 03. Financial Ledger / Expenses -->
       <section class="raster-section">
         <ItemList
           {items}
@@ -222,28 +222,28 @@
     {/if}
   </main>
 
-  <!-- Mobile Floating Action Button (Clean minimal FAB, hidden on screens >= 640px) -->
+  <!-- Mobile Floating Action Button (Refined solid button, strictly hidden on >= 640px) -->
   <button
     type="button"
     onclick={handleOpenAddModal}
-    class="mobile-fab-btn fixed bottom-5 right-5 z-40 raster-btn raster-btn-primary shadow-lg"
-    style="padding: 12px 18px; font-weight: 600; font-size: 13px;"
+    class="mobile-fab-btn fixed bottom-5 right-5 z-40 raster-btn raster-btn-primary"
+    style="padding: 10px 16px; font-size: 12px; font-weight: 500; box-shadow: var(--raster-shadow-floating);"
     aria-label="Add Expense"
   >
     <Plus class="w-4 h-4 mr-1.5" />
     <span>Add</span>
   </button>
 
-  <!-- Minimalist Footer -->
-  <footer class="border-top py-5 mt-10" style="background-color: var(--raster-surface);">
-    <div class="raster-container flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-muted">
+  <!-- Minimalist Architectural Footer -->
+  <footer class="border-top py-8 mt-12" style="background-color: var(--raster-canvas);">
+    <div class="raster-container flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-muted">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-primary">What The Cost</span>
-        <span>•</span>
+        <span class="font-medium text-primary">What The Cost</span>
+        <span>·</span>
         <span>Local-first budgeting</span>
       </div>
       <div>
-        100% private • Stored locally in your browser
+        100% private · Stored locally in your browser
       </div>
     </div>
   </footer>

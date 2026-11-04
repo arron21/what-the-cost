@@ -66,13 +66,13 @@
     aria-label="App Installation Prompt"
   >
     <div 
-      class="raster-card p-4"
-      style="box-shadow: var(--raster-shadow-hard); background-color: var(--raster-surface);"
+      class="raster-card-boxed p-4"
+      style="box-shadow: var(--raster-shadow-floating); background-color: var(--raster-canvas);"
     >
       <div class="flex justify-between items-start mb-2">
         <div class="flex items-center gap-2">
           <Download class="w-4 h-4 text-primary" />
-          <span class="font-bold text-xs text-primary">Install What The Cost</span>
+          <span class="font-medium text-xs text-primary">Install What The Cost</span>
         </div>
         <button
           type="button"
@@ -85,11 +85,11 @@
         </button>
       </div>
 
-      <p class="text-xs text-secondary mb-3 leading-relaxed">
-        Install to your home screen for quick offline launch and native app experience.
+      <p class="text-xs text-muted mb-3 leading-relaxed">
+        Install to your home screen for quick offline launch and a native app experience.
       </p>
 
-      <div class="flex justify-end gap-2 border-top pt-2.5">
+      <div class="flex justify-end gap-2 border-t border-border pt-2.5">
         <button
           type="button"
           onclick={dismissBanner}

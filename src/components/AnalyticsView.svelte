@@ -23,6 +23,13 @@
     onSelectCategoryFilter
   }: Props = $props()
 
+  const horizonSuffix: Record<TimeHorizon, string> = {
+    daily: '/ day',
+    weekly: '/ wk',
+    monthly: '/ mo',
+    yearly: '/ yr',
+  }
+
   // Category aggregation
   let categoryTotals = $derived(() => {
     const map = new Map<string, { id: string; name: string; amount: number; needsAmount: number; wantsAmount: number; count: number }>()
@@ -61,13 +68,11 @@
 </script>
 
 <div class="raster-split-asymmetric gap-5 sm:gap-6">
-  <!-- Left: Category Breakdown Table -->
-  <div class="raster-card p-5 sm:p-6">
-    <div class="flex items-center justify-between pb-3.5 mb-3 border-b border-border">
-      <div>
-        <h3 class="font-bold text-sm sm:text-base text-primary">Category Breakdown</h3>
-        <span class="text-xs text-muted mt-0.5">{categoryTotals().length} categories</span>
-      </div>
+  <!-- Left: Category Spending Table (Motus Table Pattern) -->
+  <div class="raster-card-boxed">
+    <div class="raster-section-header mb-2">
+      <h3 class="raster-h2">Category spending</h3>
+      <span class="raster-meta">{categoryTotals().length} categories</span>
     </div>
 
     {#if categoryTotals().length === 0}
@@ -75,14 +80,14 @@
         No expenses recorded yet.
       </div>
     {:else}
-      <div class="raster-table-container border-0">
-        <table class="raster-table w-full">
+      <div class="raster-table-container">
+        <table class="raster-table">
           <thead>
             <tr>
-              <th class="text-left font-medium text-xs text-muted py-2.5">Category</th>
-              <th class="text-left font-medium text-xs text-muted py-2.5">Type</th>
-              <th class="text-left font-medium text-xs text-muted py-2.5 hidden sm:table-cell">Share</th>
-              <th class="cell-num font-medium text-xs text-muted py-2.5">Total</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th class="hidden sm:table-cell">Share</th>
+              <th class="cell-num">Amount</th>
             </tr>
           </thead>
           <tbody>
@@ -95,28 +100,31 @@
                 onclick={() => onSelectCategoryFilter && onSelectCategoryFilter(cat.id)}
                 title="Filter ledger by this category"
               >
-                <td class="py-3">
-                  <span class="font-medium text-xs sm:text-sm text-primary hover:underline">{cat.name}</span>
-                  <span class="text-[11px] text-muted ml-1.5">({cat.count})</span>
+                <td>
+                  <span class="font-medium hover:underline">{cat.name}</span>
+                  <span class="text-muted ml-1" style="font-size: 11px;">({cat.count})</span>
                 </td>
-                <td class="py-3">
+                <td>
                   {#if cat.needsAmount > 0 && cat.wantsAmount > 0}
-                    <span class="raster-tag text-[10px] py-0.5 px-2">Mixed</span>
+                    <span class="raster-tag">Mixed</span>
                   {:else if cat.needsAmount > 0}
-                    <span class="raster-tag raster-tag-solid text-[10px] py-0.5 px-2">Need</span>
+                    <span class="raster-tag raster-tag-solid">Need</span>
                   {:else}
-                    <span class="raster-tag text-[10px] py-0.5 px-2" style="color: var(--raster-accent); border-color: currentColor;">Want</span>
+                    <span class="raster-tag">Want</span>
                   {/if}
                 </td>
-                <td class="py-3 hidden sm:table-cell">
-                  <div class="raster-meter-track" style="height: 4px; width: 68px;">
-                    <div 
-                      class="raster-meter-fill {isNeedDominant ? '' : 'raster-meter-fill-accent'}" 
-                      style="width: {sharePct}%;"
-                    ></div>
+                <td class="hidden sm:table-cell">
+                  <div class="raster-flex raster-items-center gap-3">
+                    <div class="raster-meter-track" style="width: 70px;">
+                      <div 
+                        class="raster-meter-fill {isNeedDominant ? '' : 'raster-meter-fill-accent'}" 
+                        style="width: {sharePct}%;"
+                      ></div>
+                    </div>
+                    <span class="raster-tabular" style="color: var(--raster-fg-muted); font-size: 11px;">{sharePct}%</span>
                   </div>
                 </td>
-                <td class="cell-num py-3 font-semibold text-xs sm:text-sm text-primary">
+                <td class="cell-num font-medium">
                   {formatCurrency(cat.amount, currency)}
                 </td>
               </tr>
@@ -126,25 +134,28 @@
       </div>
 
       {#if categoryTotals().length > 6}
-        <div class="pt-4 mt-3 border-t border-border-subtle flex justify-between items-center text-xs text-muted">
+        <div class="pt-3 mt-1 flex justify-between items-center text-xs text-muted">
           <span>Top 6 of {categoryTotals().length} categories</span>
-          <span class="text-[11px]">Filtered in ledger below</span>
+          <span style="font-size: 11px;">Filtered in expenses below</span>
         </div>
       {/if}
     {/if}
   </div>
 
-  <!-- Right: Savings Rate & Quick Summary -->
-  <div class="raster-card p-5 sm:p-6 flex flex-col justify-between">
+  <!-- Right: Capital Retention & Specification Pane (Signature .raster-spec-list) -->
+  <div class="raster-card-boxed flex flex-col justify-between">
     <div>
-      <span class="text-xs font-semibold uppercase tracking-wider text-secondary">Savings & Surplus Rate</span>
+      <div class="raster-section-header mb-2">
+        <h3 class="raster-h2">Capital retention</h3>
+        <span class="raster-meta">Surplus ratio</span>
+      </div>
 
-      <!-- Monolithic Display Figure -->
-      <div class="py-5 my-4 border-t border-b border-border">
-        <div class="text-3xl sm:text-4xl font-bold tracking-tight text-primary">
-          {hasIncome ? `${stats.savingsPercentOfIncome}%` : `${stats.needsPercentOfTotal}%`}
+      <!-- Monolithic Display Figure (Motus quiet scale) -->
+      <div class="py-4 my-2 border-t border-b border-border">
+        <div class="raster-display-xl" style="font-weight: 400;">
+          {hasIncome ? `${stats.savingsPercentOfIncome}.0%` : `${stats.needsPercentOfTotal}%`}
         </div>
-        <div class="text-xs text-secondary mt-1.5">
+        <div class="text-xs text-muted mt-1">
           {#if hasIncome}
             {formatCurrency(stats.activeNetSurplus, currency)} retained after commitments
           {:else}
@@ -153,24 +164,31 @@
         </div>
       </div>
 
-      <!-- Quick Metrics with Generous Whitespace -->
-      <div class="space-y-2 mt-5 text-sm">
-        <div class="flex justify-between items-center py-2.5 border-b border-border-subtle">
-          <span class="text-muted text-xs sm:text-sm">Total Outflow:</span>
-          <span class="font-semibold text-primary">{formatCurrency(whatIfActive ? stats.activeTotalOutflow : stats.totalOutflow, currency)}</span>
+      <!-- Specification Rows (Signature Raster 2.0 pattern) -->
+      <div class="raster-spec-list mt-3">
+        <div class="raster-spec-row-split py-3.5">
+          <span class="raster-spec-key">Total outflow</span>
+          <span class="font-mono text-sm font-medium text-primary tabular-nums">
+            {formatCurrency(whatIfActive ? stats.activeTotalOutflow : stats.totalOutflow, currency)} {horizonSuffix[horizon]}
+          </span>
         </div>
-        <div class="flex justify-between items-center py-2.5 border-b border-border-subtle">
-          <span class="text-muted text-xs sm:text-sm">Discretionary:</span>
-          <span class="font-semibold text-primary">{stats.wantsPercentOfTotal}% of total</span>
+
+        <div class="raster-spec-row-split py-3.5">
+          <span class="raster-spec-key">Discretionary</span>
+          <span class="text-xs text-secondary font-mono">
+            {stats.wantsPercentOfTotal}% of total expenditures
+          </span>
         </div>
+
+        {#if topCategory}
+          <div class="raster-spec-row-split py-3.5 border-b border-border">
+            <span class="raster-spec-key">Top category</span>
+            <span class="text-xs text-primary">
+              {topCategory.name} <span class="text-muted font-mono">({topCategoryShare}%)</span>
+            </span>
+          </div>
+        {/if}
       </div>
     </div>
-
-    <!-- Notice if top category exists -->
-    {#if topCategory}
-      <div class="mt-6 pt-4 border-t border-border-subtle text-xs text-secondary leading-relaxed">
-        <strong>{topCategory.name}</strong> represents <strong>{topCategoryShare}%</strong> of total expenditures.
-      </div>
-    {/if}
   </div>
 </div>
